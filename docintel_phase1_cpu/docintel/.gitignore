@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Environment
+.env
+.env.local
+
+# Data
+data/
+!data/eval/
+!data/eval/.gitkeep
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store

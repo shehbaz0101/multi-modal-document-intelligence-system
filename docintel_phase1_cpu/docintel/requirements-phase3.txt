@@ -1,0 +1,18 @@
+# ==============================================================================
+# DocIntel — Phase 3 requirements (cross-encoder reranking)
+# ==============================================================================
+# Install AFTER the base requirements:
+#     pip install -r requirements.txt
+#     pip install -r requirements-phase3.txt
+#
+# Adds BAAI/bge-reranker-v2-m3 support. Much smaller footprint than Phase 2 —
+# the reranker is ~560MB and CPU-viable for low-throughput setups.
+# ==============================================================================
+
+-r requirements.txt
+
+# Cross-encoder reranker (text-only queries)
+sentence-transformers>=3.0
+
+# For vision-aware reranking (query + page image) in a later phase,
+# you'll reuse the transformers + accelerate from requirements-phase2.txt.

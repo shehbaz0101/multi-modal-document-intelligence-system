@@ -1,0 +1,76 @@
+services:
+  # -------- Vector DB (dense text embeddings; multi-vector for Phase 2) --------
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: docintel_qdrant
+    ports:
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__LOG_LEVEL: INFO
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # -------- Sparse / BM25 index --------
+  opensearch:
+    image: opensearchproject/opensearch:2.17.1
+    container_name: docintel_opensearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=DocIntel@dev1
+      - plugins.security.disabled=true
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile:  { soft: 65536, hard: 65536 }
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  # -------- Metadata DB (doc registry, ACLs, audit) --------
+  postgres:
+    image: postgres:16-alpine
+    container_name: docintel_postgres
+    environment:
+      POSTGRES_USER: docintel
+      POSTGRES_PASSWORD: docintel
+      POSTGRES_DB: docintel
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docintel"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # -------- Observability (optional but recommended) --------
+  # Langfuse gives you traces, eval dashboards, and prompt versioning.
+  # Uncomment when you're ready to wire it up.
+  # langfuse:
+  #   image: langfuse/langfuse:latest
+  #   ports: ["3000:3000"]
+  #   environment:
+  #     DATABASE_URL: postgresql://docintel:docintel@postgres:5432/langfuse
+  #     NEXTAUTH_SECRET: change-me
+  #     SALT: change-me
+  #   depends_on: [postgres]
+
+volumes:
+  qdrant_storage:
+  opensearch_data:
+  pg_data:

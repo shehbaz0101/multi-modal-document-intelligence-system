@@ -1,0 +1,21 @@
+# ==============================================================================
+# DocIntel — Phase 2 requirements (ColPali visual retrieval)
+# ==============================================================================
+# Install AFTER the base requirements:
+#     pip install -r requirements.txt
+#     pip install -r requirements-phase2.txt
+#
+# These add GPU-heavy dependencies. Expect +~5GB install size and a
+# GPU with >=12GB VRAM for ColQwen2 at default batch sizes.
+# ==============================================================================
+
+-r requirements.txt
+
+# ColPali family (ColPali, ColQwen2, ColFlor) — the late-interaction
+# visual retrievers that replace CLIP/SigLIP on document pages.
+colpali-engine>=0.3
+
+# transformers is pulled in transitively, but pin it here so upgrades
+# of FlagEmbedding don't accidentally downgrade us out of ColQwen2 support.
+transformers>=4.44
+accelerate>=0.33            # device_map="auto" and bf16 loading
