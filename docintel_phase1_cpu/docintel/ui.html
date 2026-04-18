@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DocIntel — Document Intelligence</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3e;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --danger: #ff6b6b;
+    --success: #00d4aa;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* ── layout ── */
+  .shell { display: grid; grid-template-columns: 380px 1fr; grid-template-rows: 56px 1fr; height: 100vh; }
+  header { grid-column: 1/-1; display: flex; align-items: center; gap: 12px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
+  header h1 span { color: var(--accent); }
+  .badge { font-size: 10px; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 20px; font-weight: 600; letter-spacing: .5px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #444; margin-left: auto; transition: background .3s; }
+  .status-dot.ok { background: var(--success); box-shadow: 0 0 6px var(--success); }
+
+  /* ── left panel ── */
+  .left { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .section { padding: 16px; border-bottom: 1px solid var(--border); }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
+
+  /* upload zone */
+  .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px 16px; text-align: center; cursor: pointer; transition: all .2s; }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(108,99,255,.06); }
+  .upload-zone input { display: none; }
+  .upload-zone .icon { font-size: 28px; margin-bottom: 8px; }
+  .upload-zone p { font-size: 13px; color: var(--muted); }
+  .upload-zone p strong { color: var(--text); }
+
+  /* doc list */
+  .doc-list { flex: 1; overflow-y: auto; padding: 8px; }
+  .doc-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius); cursor: pointer; transition: background .15s; margin-bottom: 4px; }
+  .doc-item:hover { background: rgba(255,255,255,.04); }
+  .doc-item.active { background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.3); }
+  .doc-icon { font-size: 20px; flex-shrink: 0; }
+  .doc-info { flex: 1; min-width: 0; }
+  .doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .doc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .doc-remove { opacity: 0; color: var(--muted); font-size: 16px; cursor: pointer; flex-shrink: 0; transition: opacity .15s; }
+  .doc-item:hover .doc-remove { opacity: 1; }
+
+  /* query box */
+  .query-wrap { position: relative; }
+  .query-wrap textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); padding: 12px 44px 12px 14px; font-size: 14px; resize: none; outline: none; transition: border .2s; font-family: inherit; }
+  .query-wrap textarea:focus { border-color: var(--accent); }
+  .query-wrap button { position: absolute; right: 10px; bottom: 10px; background: var(--accent); border: none; border-radius: 6px; color: #fff; width: 30px; height: 30px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: opacity .2s; }
+  .query-wrap button:disabled { opacity: .4; cursor: default; }
+
+  /* ── right panel ── */
+  .right { display: flex; flex-direction: column; overflow: hidden; }
+  .answer-pane { flex: 1; overflow-y: auto; padding: 24px; }
+
+  /* empty state */
+  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); gap: 12px; }
+  .empty .big { font-size: 48px; }
+  .empty p { font-size: 14px; text-align: center; max-width: 320px; line-height: 1.6; }
+
+  /* answer card */
+  .answer-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .answer-card .answer-text { font-size: 15px; line-height: 1.75; }
+  .cite-tag { display: inline-block; background: rgba(108,99,255,.2); color: var(--accent); border: 1px solid rgba(108,99,255,.4); border-radius: 4px; font-size: 11px; font-weight: 700; padding: 1px 5px; cursor: pointer; transition: background .15s; }
+  .cite-tag:hover { background: rgba(108,99,255,.35); }
+  .cite-tag.active { background: var(--accent); color: #fff; }
+
+  /* citations list */
+  .citations-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin: 20px 0 10px; }
+  .citation-item { display: flex; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; cursor: pointer; transition: border-color .2s; }
+  .citation-item:hover { border-color: var(--accent); }
+  .citation-item.highlighted { border-color: var(--accent); background: rgba(108,99,255,.08); }
+  .cite-badge { flex-shrink: 0; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .cite-body { flex: 1; min-width: 0; }
+  .cite-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .cite-snippet { font-size: 13px; line-height: 1.5; color: var(--text); }
+  .modality-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 6px; }
+  .mod-text { background: rgba(0,212,170,.15); color: var(--accent2); }
+  .mod-table { background: rgba(255,193,7,.15); color: #ffc107; }
+  .mod-figure { background: rgba(255,107,107,.15); color: var(--danger); }
+
+  /* page viewer */
+  .page-viewer { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 20px; }
+  .page-viewer-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 12px; }
+  .page-canvas-wrap { position: relative; display: inline-block; max-width: 100%; }
+  .page-canvas-wrap img { max-width: 100%; border-radius: 6px; display: block; }
+  .bbox-overlay { position: absolute; border: 3px solid var(--accent); border-radius: 4px; background: rgba(108,99,255,.15); pointer-events: none; transition: all .2s; }
+
+  /* progress */
+  .progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width .3s; }
+
+  /* spinner */
+  .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; font-size: 13px; z-index: 999; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.4); transform: translateY(80px); opacity: 0; transition: all .3s; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { border-color: var(--danger); }
+
+  /* timing bar */
+  .timings { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .timing-chip { font-size: 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; color: var(--muted); }
+  .timing-chip span { color: var(--text); font-weight: 600; }
+
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- header -->
+  <header>
+    <div style="font-size:22px">🧠</div>
+    <h1>Doc<span>Intel</span></h1>
+    <div class="badge">PHASE 1</div>
+    <div style="font-size:12px;color:var(--muted);margin-left:8px">Multi-Modal Document Intelligence</div>
+    <div class="status-dot" id="statusDot" title="API status"></div>
+  </header>
+
+  <!-- left panel -->
+  <div class="left">
+
+    <!-- upload -->
+    <div class="section">
+      <div class="section-title">Documents</div>
+      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept=".pdf" multiple/>
+        <div class="icon">📄</div>
+        <p><strong>Drop PDFs here</strong><br>or click to browse</p>
+        <div class="progress-bar" id="uploadProgress" style="display:none">
+          <div class="progress-fill" id="uploadFill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="doc-list" id="docList">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No documents yet</div>
+      </div>
+    </div>
+
+    <!-- query -->
+    <div class="section" style="border-bottom:none;padding-bottom:20px">
+      <div class="section-title">Ask a Question</div>
+      <div class="query-wrap">
+        <textarea id="queryInput" rows="4" placeholder="What is this document about?&#10;What are the key findings?&#10;Show me the revenue table..."></textarea>
+        <button id="askBtn" onclick="askQuestion()" title="Ask (Enter)">➤</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Press Enter to submit · Shift+Enter for new line</div>
+    </div>
+
+  </div>
+
+  <!-- right panel -->
+  <div class="right">
+    <div class="answer-pane" id="answerPane">
+      <div class="empty" id="emptyState">
+        <div class="big">🔍</div>
+        <p>Upload a PDF and ask a question to get grounded answers with visual citations</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:8000';
+let docs = [];      // {doc_id, name, pages, tenant_id}
+let activeDoc = null;
+let asking = false;
+
+// ── health check ──
+async function checkHealth() {
+  try {
+    const r = await fetch(`${API}/health`);
+    if (r.ok) document.getElementById('statusDot').className = 'status-dot ok';
+  } catch {}
+}
+checkHealth();
+setInterval(checkHealth, 10000);
+
+// ── drag & drop ──
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); handleFiles(e.dataTransfer.files); });
+document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
+
+async function handleFiles(files) {
+  for (const file of files) {
+    if (!file.name.toLowerCase().endsWith('.pdf')) { toast('Only PDF files supported', true); continue; }
+    await ingestFile(file);
+  }
+}
+
+async function ingestFile(file) {
+  const prog = document.getElementById('uploadProgress');
+  const fill = document.getElementById('uploadFill');
+  prog.style.display = 'block';
+  fill.style.width = '30%';
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('tenant_id', 'default');
+
+  try {
+    fill.style.width = '60%';
+    const r = await fetch(`${API}/ingest`, { method: 'POST', body: fd });
+    fill.style.width = '100%';
+    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Ingest failed'); }
+    const data = await r.json();
+    docs.push({ doc_id: data.doc_id, name: data.filename || file.name, pages: data.pages, tenant_id: 'default' });
+    renderDocList();
+    toast(`✓ Ingested "${data.filename}" (${data.pages} page${data.pages>1?'s':''})`);
+    // auto-select
+    activeDoc = docs[docs.length - 1];
+    renderDocList();
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    setTimeout(() => { prog.style.display = 'none'; fill.style.width = '0%'; }, 600);
+  }
+}
+
+function renderDocList() {
+  const el = document.getElementById('docList');
+  if (!docs.length) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No documents yet</div>'; return; }
+  el.innerHTML = docs.map((d, i) => `
+    <div class="doc-item ${activeDoc===d?'active':''}" onclick="selectDoc(${i})">
+      <div class="doc-icon">📄</div>
+      <div class="doc-info">
+        <div class="doc-name">${d.name}</div>
+        <div class="doc-meta">${d.pages} page${d.pages>1?'s':''} · ${d.doc_id.slice(0,8)}...</div>
+      </div>
+      <div class="doc-remove" onclick="removeDoc(event,${i})">✕</div>
+    </div>`).join('');
+}
+
+function selectDoc(i) { activeDoc = docs[i]; renderDocList(); }
+function removeDoc(e, i) { e.stopPropagation(); docs.splice(i,1); if (activeDoc===docs[i]) activeDoc=null; renderDocList(); }
+
+// ── ask ──
+document.getElementById('queryInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askQuestion(); }
+});
+
+async function askQuestion() {
+  const q = document.getElementById('queryInput').value.trim();
+  if (!q || asking) return;
+  if (!docs.length) { toast('Upload a document first', true); return; }
+
+  asking = true;
+  document.getElementById('askBtn').disabled = true;
+  document.getElementById('emptyState').style.display = 'none';
+
+  // loading state
+  const pane = document.getElementById('answerPane');
+  const loadId = 'loading_' + Date.now();
+  pane.insertAdjacentHTML('afterbegin', `
+    <div id="${loadId}" class="answer-card" style="display:flex;align-items:center;gap:12px">
+      <div class="spinner"></div>
+      <span style="color:var(--muted);font-size:14px">Retrieving evidence and generating answer...</span>
+    </div>`);
+
+  try {
+    const r = await fetch(`${API}/ask`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: q, tenant_id: 'default', user_ids: [] })
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Ask failed'); }
+    const data = await r.json();
+    document.getElementById(loadId)?.remove();
+    renderAnswer(q, data);
+  } catch(e) {
+    document.getElementById(loadId)?.remove();
+    toast(e.message, true);
+  } finally {
+    asking = false;
+    document.getElementById('askBtn').disabled = false;
+  }
+}
+
+function renderAnswer(query, data) {
+  const pane = document.getElementById('answerPane');
+
+  // render inline citation tags
+  let answerHtml = escHtml(data.answer);
+  (data.citations || []).forEach(c => {
+    const tag = `<span class="cite-tag" id="ctag_${c.evidence_id}" onclick="highlightCitation('${c.evidence_id}')">${c.evidence_id}</span>`;
+    answerHtml = answerHtml.replace(new RegExp(`\\[${c.evidence_id}\\]`, 'g'), tag);
+  });
+
+  const modClass = m => ({ text:'mod-text', table:'mod-table', figure:'mod-figure' }[m] || 'mod-text');
+
+  const citationsHtml = (data.citations||[]).length ? `
+    <div class="citations-title">Citations (${data.citations.length})</div>
+    ${data.citations.map(c => `
+      <div class="citation-item" id="citem_${c.evidence_id}" onclick="highlightCitation('${c.evidence_id}')">
+        <div class="cite-badge">${c.evidence_id}</div>
+        <div class="cite-body">
+          <div class="cite-meta">
+            Page ${c.page}
+            <span class="modality-badge ${modClass(c.modality)}">${c.modality}</span>
+            · bbox (${Math.round(c.bbox.x0)}, ${Math.round(c.bbox.y0)}, ${Math.round(c.bbox.x1)}, ${Math.round(c.bbox.y1)})
+          </div>
+          <div class="cite-snippet">${escHtml((c.snippet||'').slice(0,180))}${(c.snippet||'').length>180?'…':''}</div>
+        </div>
+      </div>`).join('')}` : '';
+
+  const timingsHtml = data.timings_ms ? `
+    <div class="timings">
+      ${Object.entries(data.timings_ms).map(([k,v]) => `<div class="timing-chip">${k}: <span>${v}ms</span></div>`).join('')}
+    </div>` : '';
+
+  const insufficient = data.insufficient ? `<div style="color:var(--danger);font-size:13px;margin-bottom:12px">⚠ Insufficient evidence in the indexed documents</div>` : '';
+
+  const card = document.createElement('div');
+  card.className = 'answer-card';
+  card.innerHTML = `
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:600">Q: ${escHtml(query)}</div>
+    ${insufficient}
+    <div class="answer-text">${answerHtml}</div>
+    ${timingsHtml}
+    ${citationsHtml}
+    <div id="pageViewer_${Date.now()}" class="page-viewer" style="display:none">
+      <div class="page-viewer-title">📄 Page Preview</div>
+      <div class="page-canvas-wrap" id="canvasWrap"></div>
+    </div>`;
+  pane.insertAdjacentElement('afterbegin', card);
+}
+
+function highlightCitation(eid) {
+  // toggle active on cite tags
+  document.querySelectorAll('.cite-tag').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.citation-item').forEach(t => t.classList.remove('highlighted'));
+  const tag = document.getElementById(`ctag_${eid}`);
+  const item = document.getElementById(`citem_${eid}`);
+  if (tag) tag.classList.add('active');
+  if (item) { item.classList.add('highlighted'); item.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+}
+
+// ── toast ──
+function toast(msg, isErr=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3500);
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>

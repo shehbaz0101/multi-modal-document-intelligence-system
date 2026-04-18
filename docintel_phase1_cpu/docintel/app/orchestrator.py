@@ -32,6 +32,9 @@ log = logging.getLogger(__name__)
 class DocIntel:
     def __init__(self, settings: AppSettings | None = None):
         self.s = settings or get_settings()
+        if self.s.retrieval.rerank_enabled:
+            from retrieval.reranker import CrossEncoderReranker
+            self.retriever.reranker = CrossEncoderReranker(self.s.retrieval.rerank_model)
 
         # Gemini API key — reads GEMINI_API_KEY from env if not set in config
         gemini_key = self.s.generation.api_key or os.environ.get("GEMINI_API_KEY")

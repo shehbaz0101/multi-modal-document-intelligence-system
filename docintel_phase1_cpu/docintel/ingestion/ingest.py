@@ -48,7 +48,7 @@ def ingest_pdf(
     (which we update, so we keep the latest acl_read/uploader).
     """
     doc_id = Storage.content_hash(file_bytes)
-    log.info("Ingesting PDF", extra={"doc_id": doc_id, "filename": original_filename})
+    log.info("Ingesting PDF doc_id=%s file=%s", doc_id, original_filename)
 
     # 1) Persist the original.
     original_uri = storage.put(f"originals/{doc_id}/{original_filename}", file_bytes)
@@ -60,7 +60,7 @@ def ingest_pdf(
     try:
         for page_idx in range(len(pdf)):
             pdf_page = pdf[page_idx]
-            pil_image: Image.Image = pdf_page.render(scale=scale).to_pil()
+            pil_image: Image.Image = pdf_page.render(scale=float(scale)).to_pil()
             buf = io.BytesIO()
             pil_image.save(buf, format="PNG", optimize=True)
             image_bytes = buf.getvalue()

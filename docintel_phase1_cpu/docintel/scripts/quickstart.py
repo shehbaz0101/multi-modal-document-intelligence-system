@@ -17,12 +17,20 @@ What you'll see:
     [answer]   <the actual grounded answer with [e0], [e1] citations>
     [cite e0]  doc: ..., page: 7, bbox: (x0, y0, x1, y1)
 """
+
 from __future__ import annotations
 
 import argparse
 import logging
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from dotenv import load_dotenv
+load_dotenv()
+
+from app.orchestrator import DocIntel
 
 # Make the project importable when running as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
