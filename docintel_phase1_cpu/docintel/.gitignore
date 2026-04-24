@@ -12,6 +12,7 @@ dist/
 # Environment
 .env
 .env.local
+.env.example
 
 # Data
 data/
