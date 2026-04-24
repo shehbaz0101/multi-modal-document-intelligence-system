@@ -2,369 +2,406 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DocIntel — Document Intelligence</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DocIntel</title>
 <style>
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --border: #2a2d3e;
-    --accent: #6c63ff;
-    --accent2: #00d4aa;
-    --text: #e2e8f0;
-    --muted: #8892a4;
-    --danger: #ff6b6b;
-    --success: #00d4aa;
-    --radius: 10px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+:root{--bg:#0d0f18;--surface:#151823;--surface2:#1c2033;--border:#252840;--accent:#7c6dfa;--accent2:#00c9a7;--text:#e2e8f0;--muted:#6b7280;--danger:#f87171;--warn:#fbbf24;--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;height:100vh;overflow:hidden;}
+.shell{display:grid;grid-template-columns:340px 1fr;grid-template-rows:52px 1fr;height:100vh;}
 
-  /* ── layout ── */
-  .shell { display: grid; grid-template-columns: 380px 1fr; grid-template-rows: 56px 1fr; height: 100vh; }
-  header { grid-column: 1/-1; display: flex; align-items: center; gap: 12px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
-  header h1 { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
-  header h1 span { color: var(--accent); }
-  .badge { font-size: 10px; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 20px; font-weight: 600; letter-spacing: .5px; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #444; margin-left: auto; transition: background .3s; }
-  .status-dot.ok { background: var(--success); box-shadow: 0 0 6px var(--success); }
+/* header */
+header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border);z-index:10;}
+.logo{font-size:20px;font-weight:800;letter-spacing:-.5px;}
+.logo span{color:var(--accent);}
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(124,109,250,.2);color:var(--accent);border:1px solid rgba(124,109,250,.3);}
+.hstatus{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.dot{width:7px;height:7px;border-radius:50%;background:#374151;}
+.dot.ok{background:var(--accent2);box-shadow:0 0 6px var(--accent2);}
+.dot.err{background:var(--danger);}
+.hbtn{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.hbtn:hover{border-color:var(--accent);color:var(--accent);}
 
-  /* ── left panel ── */
-  .left { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-  .section { padding: 16px; border-bottom: 1px solid var(--border); }
-  .section-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
+/* left */
+.left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sec{padding:14px 16px;border-bottom:1px solid var(--border);}
+.sec-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;}
 
-  /* upload zone */
-  .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px 16px; text-align: center; cursor: pointer; transition: all .2s; }
-  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(108,99,255,.06); }
-  .upload-zone input { display: none; }
-  .upload-zone .icon { font-size: 28px; margin-bottom: 8px; }
-  .upload-zone p { font-size: 13px; color: var(--muted); }
-  .upload-zone p strong { color: var(--text); }
+/* drop zone */
+.drop{border:2px dashed var(--border);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.drop:hover,.drop.over{border-color:var(--accent);background:rgba(124,109,250,.05);}
+.drop input{display:none;}
+.drop .dicon{font-size:24px;margin-bottom:6px;}
+.drop p{font-size:12px;color:var(--muted);}
+.drop p strong{color:var(--text);}
+.pbar{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden;display:none;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .3s;}
 
-  /* doc list */
-  .doc-list { flex: 1; overflow-y: auto; padding: 8px; }
-  .doc-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius); cursor: pointer; transition: background .15s; margin-bottom: 4px; }
-  .doc-item:hover { background: rgba(255,255,255,.04); }
-  .doc-item.active { background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.3); }
-  .doc-icon { font-size: 20px; flex-shrink: 0; }
-  .doc-info { flex: 1; min-width: 0; }
-  .doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .doc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .doc-remove { opacity: 0; color: var(--muted); font-size: 16px; cursor: pointer; flex-shrink: 0; transition: opacity .15s; }
-  .doc-item:hover .doc-remove { opacity: 1; }
+/* doc list */
+.dlist{flex:1;overflow-y:auto;padding:6px;}
+.ditem{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:2px;border:1px solid transparent;}
+.ditem:hover{background:rgba(255,255,255,.03);}
+.ditem.active{background:rgba(124,109,250,.12);border-color:rgba(124,109,250,.25);}
+.dicon{font-size:18px;flex-shrink:0;}
+.dinfo{flex:1;min-width:0;}
+.dname{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dmeta{font-size:10px;color:var(--muted);margin-top:1px;}
+.ddel{opacity:0;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 4px;border-radius:4px;transition:all .15s;flex-shrink:0;}
+.ditem:hover .ddel{opacity:1;}
+.ddel:hover{color:var(--danger);background:rgba(248,113,113,.1);}
 
-  /* query box */
-  .query-wrap { position: relative; }
-  .query-wrap textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); padding: 12px 44px 12px 14px; font-size: 14px; resize: none; outline: none; transition: border .2s; font-family: inherit; }
-  .query-wrap textarea:focus { border-color: var(--accent); }
-  .query-wrap button { position: absolute; right: 10px; bottom: 10px; background: var(--accent); border: none; border-radius: 6px; color: #fff; width: 30px; height: 30px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: opacity .2s; }
-  .query-wrap button:disabled { opacity: .4; cursor: default; }
+/* query */
+.qwrap{position:relative;}
+.qwrap textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);padding:10px 42px 10px 12px;font-size:13px;resize:none;outline:none;transition:border .2s;font-family:inherit;line-height:1.5;}
+.qwrap textarea:focus{border-color:var(--accent);}
+.qwrap textarea::placeholder{color:var(--muted);}
+.qbtn{position:absolute;right:8px;bottom:8px;background:var(--accent);border:none;border-radius:6px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:opacity .2s;}
+.qbtn:disabled{opacity:.35;cursor:default;}
+.hint{font-size:10px;color:var(--muted);margin-top:5px;}
 
-  /* ── right panel ── */
-  .right { display: flex; flex-direction: column; overflow: hidden; }
-  .answer-pane { flex: 1; overflow-y: auto; padding: 24px; }
+/* history */
+.hist-list{padding:6px;}
+.hist-item{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted);transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.hist-item:hover{background:rgba(255,255,255,.04);color:var(--text);}
 
-  /* empty state */
-  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); gap: 12px; }
-  .empty .big { font-size: 48px; }
-  .empty p { font-size: 14px; text-align: center; max-width: 320px; line-height: 1.6; }
+/* right */
+.right{display:flex;flex-direction:column;overflow:hidden;}
+.apane{flex:1;overflow-y:auto;padding:20px;}
 
-  /* answer card */
-  .answer-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-  .answer-card .answer-text { font-size: 15px; line-height: 1.75; }
-  .cite-tag { display: inline-block; background: rgba(108,99,255,.2); color: var(--accent); border: 1px solid rgba(108,99,255,.4); border-radius: 4px; font-size: 11px; font-weight: 700; padding: 1px 5px; cursor: pointer; transition: background .15s; }
-  .cite-tag:hover { background: rgba(108,99,255,.35); }
-  .cite-tag.active { background: var(--accent); color: #fff; }
+/* empty */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:10px;}
+.empty .eicon{font-size:44px;}
+.empty p{font-size:13px;text-align:center;max-width:300px;line-height:1.7;}
 
-  /* citations list */
-  .citations-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin: 20px 0 10px; }
-  .citation-item { display: flex; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; cursor: pointer; transition: border-color .2s; }
-  .citation-item:hover { border-color: var(--accent); }
-  .citation-item.highlighted { border-color: var(--accent); background: rgba(108,99,255,.08); }
-  .cite-badge { flex-shrink: 0; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-  .cite-body { flex: 1; min-width: 0; }
-  .cite-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-  .cite-snippet { font-size: 13px; line-height: 1.5; color: var(--text); }
-  .modality-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 6px; }
-  .mod-text { background: rgba(0,212,170,.15); color: var(--accent2); }
-  .mod-table { background: rgba(255,193,7,.15); color: #ffc107; }
-  .mod-figure { background: rgba(255,107,107,.15); color: var(--danger); }
+/* answer card */
+.acard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.qline{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.qline .qtxt{color:var(--text);}
+.cache-badge{font-size:9px;background:rgba(0,201,167,.15);color:var(--accent2);border:1px solid rgba(0,201,167,.3);padding:1px 6px;border-radius:4px;font-weight:700;}
+.ans-text{font-size:14px;line-height:1.8;}
+.ctag{display:inline-block;background:rgba(124,109,250,.18);color:var(--accent);border:1px solid rgba(124,109,250,.35);border-radius:4px;font-size:10px;font-weight:700;padding:1px 5px;cursor:pointer;transition:all .15s;margin:0 1px;}
+.ctag:hover,.ctag.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.insuf{color:var(--danger);font-size:12px;margin-bottom:8px;padding:8px 12px;background:rgba(248,113,113,.08);border-radius:6px;border:1px solid rgba(248,113,113,.2);}
 
-  /* page viewer */
-  .page-viewer { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 20px; }
-  .page-viewer-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 12px; }
-  .page-canvas-wrap { position: relative; display: inline-block; max-width: 100%; }
-  .page-canvas-wrap img { max-width: 100%; border-radius: 6px; display: block; }
-  .bbox-overlay { position: absolute; border: 3px solid var(--accent); border-radius: 4px; background: rgba(108,99,255,.15); pointer-events: none; transition: all .2s; }
+/* timings */
+.timings{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.tchip{font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted);}
+.tchip b{color:var(--text);}
 
-  /* progress */
-  .progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width .3s; }
+/* citations */
+.ctitle{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:14px 0 8px;}
+.citem{display:flex;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;}
+.citem:hover{border-color:var(--accent);}
+.citem.hl{border-color:var(--accent);background:rgba(124,109,250,.07);}
+.cbadge{flex-shrink:0;background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.cbody{flex:1;min-width:0;}
+.cmeta{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.csnip{font-size:12px;line-height:1.5;}
+.mbadge{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;text-transform:uppercase;margin-left:4px;}
+.mt{background:rgba(0,201,167,.12);color:var(--accent2);}
+.mtb{background:rgba(251,191,36,.12);color:var(--warn);}
+.mf{background:rgba(248,113,113,.12);color:var(--danger);}
 
-  /* spinner */
-  .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* loading */
+.loading-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .6s linear infinite;flex-shrink:0;}
+@keyframes sp{to{transform:rotate(360deg)}}
 
-  /* toast */
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; font-size: 13px; z-index: 999; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.4); transform: translateY(80px); opacity: 0; transition: all .3s; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.error { border-color: var(--danger); }
+/* metrics panel */
+.mpanel{position:fixed;top:62px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;width:260px;z-index:100;display:none;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.mpanel.show{display:block;}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.mrow:last-child{border:none;}
+.mrow span:first-child{color:var(--muted);}
+.mrow span:last-child{font-weight:600;}
 
-  /* timing bar */
-  .timings { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-  .timing-chip { font-size: 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; color: var(--muted); }
-  .timing-chip span { color: var(--text); font-weight: 600; }
+/* toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:12px;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(60px);opacity:0;transition:all .25s;max-width:320px;}
+.toast.show{transform:none;opacity:1;}
+.toast.err{border-color:var(--danger);}
 
-  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <!-- header -->
-  <header>
-    <div style="font-size:22px">🧠</div>
-    <h1>Doc<span>Intel</span></h1>
-    <div class="badge">PHASE 1</div>
-    <div style="font-size:12px;color:var(--muted);margin-left:8px">Multi-Modal Document Intelligence</div>
-    <div class="status-dot" id="statusDot" title="API status"></div>
-  </header>
-
-  <!-- left panel -->
-  <div class="left">
-
-    <!-- upload -->
-    <div class="section">
-      <div class="section-title">Documents</div>
-      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <input type="file" id="fileInput" accept=".pdf" multiple/>
-        <div class="icon">📄</div>
-        <p><strong>Drop PDFs here</strong><br>or click to browse</p>
-        <div class="progress-bar" id="uploadProgress" style="display:none">
-          <div class="progress-fill" id="uploadFill" style="width:0%"></div>
-        </div>
-      </div>
-      <div class="doc-list" id="docList">
-        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No documents yet</div>
-      </div>
-    </div>
-
-    <!-- query -->
-    <div class="section" style="border-bottom:none;padding-bottom:20px">
-      <div class="section-title">Ask a Question</div>
-      <div class="query-wrap">
-        <textarea id="queryInput" rows="4" placeholder="What is this document about?&#10;What are the key findings?&#10;Show me the revenue table..."></textarea>
-        <button id="askBtn" onclick="askQuestion()" title="Ask (Enter)">➤</button>
-      </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px">Press Enter to submit · Shift+Enter for new line</div>
-    </div>
-
+<header>
+  <div class="logo">Doc<span>Intel</span></div>
+  <div class="pill">v1.0</div>
+  <div class="hstatus">
+    <div class="dot" id="dot"></div>
+    <span id="statusTxt">checking...</span>
   </div>
+  <button class="hbtn" onclick="toggleMetrics()">📊 Metrics</button>
+  <button class="hbtn" onclick="clearHistory()">🗑 Clear</button>
+</header>
 
-  <!-- right panel -->
-  <div class="right">
-    <div class="answer-pane" id="answerPane">
-      <div class="empty" id="emptyState">
-        <div class="big">🔍</div>
-        <p>Upload a PDF and ask a question to get grounded answers with visual citations</p>
-      </div>
-    </div>
-  </div>
-
+<!-- metrics panel -->
+<div class="mpanel" id="metricsPanel">
+  <div class="sec-title" style="margin-bottom:10px">Live Metrics</div>
+  <div class="mrow"><span>Queries total</span><span id="mAskTotal">—</span></div>
+  <div class="mrow"><span>Cache hits</span><span id="mCacheHits">—</span></div>
+  <div class="mrow"><span>Cache hit rate</span><span id="mCacheRate">—</span></div>
+  <div class="mrow"><span>Avg latency</span><span id="mAvgLat">—</span></div>
+  <div class="mrow"><span>Ingest errors</span><span id="mIngErr">—</span></div>
+  <div class="mrow"><span>Ask errors</span><span id="mAskErr">—</span></div>
+  <div class="mrow"><span>Uptime</span><span id="mUptime">—</span></div>
 </div>
 
-<!-- toast -->
+<div class="left">
+  <div class="sec">
+    <div class="sec-title">Documents</div>
+    <div class="drop" id="dz" onclick="document.getElementById('fi').click()">
+      <input type="file" id="fi" accept=".pdf" multiple/>
+      <div class="dicon">📄</div>
+      <p><strong>Drop PDFs here</strong> or click to browse</p>
+      <div class="pbar" id="pbar"><div class="pfill" id="pfill" style="width:0"></div></div>
+    </div>
+    <div class="dlist" id="dlist" style="margin-top:8px;max-height:200px;overflow-y:auto;">
+      <div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">No documents yet</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Ask</div>
+    <div class="qwrap">
+      <textarea id="qi" rows="4" placeholder="What is this document about?
+What are the key findings?
+List all skills mentioned..."></textarea>
+      <button class="qbtn" id="abtn" onclick="doAsk()">➤</button>
+    </div>
+    <div class="hint">Enter to submit · Shift+Enter for new line</div>
+  </div>
+
+  <div class="sec" style="flex:1;overflow:hidden;display:flex;flex-direction:column;border-bottom:none;">
+    <div class="sec-title">History</div>
+    <div class="hist-list" id="hlist" style="overflow-y:auto;flex:1;">
+      <div style="font-size:12px;color:var(--muted);padding:4px">No queries yet</div>
+    </div>
+  </div>
+</div>
+
+<div class="right">
+  <div class="apane" id="apane">
+    <div class="empty" id="estat">
+      <div class="eicon">🧠</div>
+      <p>Upload a PDF and ask a question to get grounded answers with source citations</p>
+    </div>
+  </div>
+</div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'http://localhost:8000';
-let docs = [];      // {doc_id, name, pages, tenant_id}
-let activeDoc = null;
-let asking = false;
+const API='http://localhost:8000';
+let docs=[],history=[],asking=false,metricsOpen=false;
 
-// ── health check ──
-async function checkHealth() {
-  try {
-    const r = await fetch(`${API}/health`);
-    if (r.ok) document.getElementById('statusDot').className = 'status-dot ok';
-  } catch {}
+// health
+async function checkHealth(){
+  try{
+    const r=await fetch(`${API}/health`);
+    const d=await r.json();
+    const ok=d.status==='ok';
+    document.getElementById('dot').className='dot'+(ok?' ok':' err');
+    document.getElementById('statusTxt').textContent=ok?`${d.model}`:'degraded';
+  }catch{
+    document.getElementById('dot').className='dot err';
+    document.getElementById('statusTxt').textContent='offline';
+  }
 }
-checkHealth();
-setInterval(checkHealth, 10000);
+checkHealth();setInterval(checkHealth,10000);
 
-// ── drag & drop ──
-const dz = document.getElementById('dropZone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); handleFiles(e.dataTransfer.files); });
-document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
+// metrics
+async function fetchMetrics(){
+  try{
+    const r=await fetch(`${API}/metrics`);
+    const d=await r.json();
+    document.getElementById('mAskTotal').textContent=d.ask_total;
+    document.getElementById('mCacheHits').textContent=d.ask_cache_hits;
+    document.getElementById('mCacheRate').textContent=(d.cache_hit_rate*100).toFixed(1)+'%';
+    document.getElementById('mAvgLat').textContent=d.ask_avg_latency_ms+'ms';
+    document.getElementById('mIngErr').textContent=d.ingest_errors;
+    document.getElementById('mAskErr').textContent=d.ask_errors;
+  }catch{}
+}
+function toggleMetrics(){
+  metricsOpen=!metricsOpen;
+  document.getElementById('metricsPanel').className='mpanel'+(metricsOpen?' show':'');
+  if(metricsOpen)fetchMetrics();
+}
+setInterval(()=>{if(metricsOpen)fetchMetrics();},5000);
 
-async function handleFiles(files) {
-  for (const file of files) {
-    if (!file.name.toLowerCase().endsWith('.pdf')) { toast('Only PDF files supported', true); continue; }
-    await ingestFile(file);
+// drag-drop
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');handleFiles(e.dataTransfer.files);});
+document.getElementById('fi').addEventListener('change',e=>handleFiles(e.target.files));
+
+async function handleFiles(files){
+  for(const f of files){
+    if(!f.name.toLowerCase().endsWith('.pdf')){toast('Only PDFs supported',true);continue;}
+    await ingest(f);
   }
 }
 
-async function ingestFile(file) {
-  const prog = document.getElementById('uploadProgress');
-  const fill = document.getElementById('uploadFill');
-  prog.style.display = 'block';
-  fill.style.width = '30%';
-
-  const fd = new FormData();
-  fd.append('file', file);
-  fd.append('tenant_id', 'default');
-
-  try {
-    fill.style.width = '60%';
-    const r = await fetch(`${API}/ingest`, { method: 'POST', body: fd });
-    fill.style.width = '100%';
-    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Ingest failed'); }
-    const data = await r.json();
-    docs.push({ doc_id: data.doc_id, name: data.filename || file.name, pages: data.pages, tenant_id: 'default' });
-    renderDocList();
-    toast(`✓ Ingested "${data.filename}" (${data.pages} page${data.pages>1?'s':''})`);
-    // auto-select
-    activeDoc = docs[docs.length - 1];
-    renderDocList();
-  } catch (e) {
-    toast(e.message, true);
-  } finally {
-    setTimeout(() => { prog.style.display = 'none'; fill.style.width = '0%'; }, 600);
-  }
+async function ingest(file){
+  const pb=document.getElementById('pbar'),pf=document.getElementById('pfill');
+  pb.style.display='block';pf.style.width='20%';
+  const fd=new FormData();
+  fd.append('file',file);fd.append('tenant_id','default');
+  try{
+    pf.style.width='60%';
+    const r=await fetch(`${API}/ingest`,{method:'POST',body:fd});
+    pf.style.width='100%';
+    if(!r.ok){const e=await r.json();throw new Error(e.detail||'Ingest failed');}
+    const d=await r.json();
+    docs.push({doc_id:d.doc_id,name:file.name,pages:d.pages});
+    renderDocs();
+    toast(`✓ "${file.name}" ingested — ${d.pages} page${d.pages>1?'s':''}`);
+  }catch(e){toast(e.message,true);}
+  finally{setTimeout(()=>{pb.style.display='none';pf.style.width='0';},600);}
 }
 
-function renderDocList() {
-  const el = document.getElementById('docList');
-  if (!docs.length) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No documents yet</div>'; return; }
-  el.innerHTML = docs.map((d, i) => `
-    <div class="doc-item ${activeDoc===d?'active':''}" onclick="selectDoc(${i})">
-      <div class="doc-icon">📄</div>
-      <div class="doc-info">
-        <div class="doc-name">${d.name}</div>
-        <div class="doc-meta">${d.pages} page${d.pages>1?'s':''} · ${d.doc_id.slice(0,8)}...</div>
+function renderDocs(){
+  const el=document.getElementById('dlist');
+  if(!docs.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">No documents yet</div>';return;}
+  el.innerHTML=docs.map((d,i)=>`
+    <div class="ditem">
+      <div class="dicon">📄</div>
+      <div class="dinfo">
+        <div class="dname" title="${esc(d.name)}">${esc(d.name)}</div>
+        <div class="dmeta">${d.pages}p · ${d.doc_id.slice(0,8)}…</div>
       </div>
-      <div class="doc-remove" onclick="removeDoc(event,${i})">✕</div>
+      <div class="ddel" onclick="delDoc(event,'${d.doc_id}',${i})">✕</div>
     </div>`).join('');
 }
 
-function selectDoc(i) { activeDoc = docs[i]; renderDocList(); }
-function removeDoc(e, i) { e.stopPropagation(); docs.splice(i,1); if (activeDoc===docs[i]) activeDoc=null; renderDocList(); }
+async function delDoc(e,doc_id,i){
+  e.stopPropagation();
+  try{
+    await fetch(`${API}/documents/${doc_id}`,{method:'DELETE'});
+    docs.splice(i,1);renderDocs();toast('Document removed');
+  }catch{toast('Delete failed',true);}
+}
 
-// ── ask ──
-document.getElementById('queryInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askQuestion(); }
+// ask
+document.getElementById('qi').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doAsk();}
 });
 
-async function askQuestion() {
-  const q = document.getElementById('queryInput').value.trim();
-  if (!q || asking) return;
-  if (!docs.length) { toast('Upload a document first', true); return; }
+async function doAsk(){
+  const q=document.getElementById('qi').value.trim();
+  if(!q||asking)return;
+  if(!docs.length){toast('Upload a document first',true);return;}
+  asking=true;
+  document.getElementById('abtn').disabled=true;
+  document.getElementById('estat').style.display='none';
 
-  asking = true;
-  document.getElementById('askBtn').disabled = true;
-  document.getElementById('emptyState').style.display = 'none';
+  // add to history
+  history.unshift(q);
+  if(history.length>20)history.pop();
+  renderHistory();
 
-  // loading state
-  const pane = document.getElementById('answerPane');
-  const loadId = 'loading_' + Date.now();
-  pane.insertAdjacentHTML('afterbegin', `
-    <div id="${loadId}" class="answer-card" style="display:flex;align-items:center;gap:12px">
-      <div class="spinner"></div>
-      <span style="color:var(--muted);font-size:14px">Retrieving evidence and generating answer...</span>
+  const pane=document.getElementById('apane');
+  const lid='l'+Date.now();
+  pane.insertAdjacentHTML('afterbegin',`
+    <div id="${lid}" class="loading-card">
+      <div class="spin"></div>
+      <span style="color:var(--muted);font-size:13px">Retrieving evidence · generating grounded answer…</span>
     </div>`);
 
-  try {
-    const r = await fetch(`${API}/ask`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: q, tenant_id: 'default', user_ids: [] })
+  try{
+    const r=await fetch(`${API}/ask`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({query:q,tenant_id:'default',user_ids:[]})
     });
-    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Ask failed'); }
-    const data = await r.json();
-    document.getElementById(loadId)?.remove();
-    renderAnswer(q, data);
-  } catch(e) {
-    document.getElementById(loadId)?.remove();
-    toast(e.message, true);
-  } finally {
-    asking = false;
-    document.getElementById('askBtn').disabled = false;
+    if(!r.ok){const e=await r.json();throw new Error(e.detail||'Ask failed');}
+    const d=await r.json();
+    document.getElementById(lid)?.remove();
+    renderAnswer(q,d);
+  }catch(e){
+    document.getElementById(lid)?.remove();
+    toast(e.message,true);
+  }finally{
+    asking=false;
+    document.getElementById('abtn').disabled=false;
   }
 }
 
-function renderAnswer(query, data) {
-  const pane = document.getElementById('answerPane');
+function renderAnswer(query,data){
+  const pane=document.getElementById('apane');
+  const mc=m=>({text:'mt',table:'mtb',figure:'mf'}[m]||'mt');
+  const mn=m=>({text:'Text',table:'Table',figure:'Figure'}[m]||m);
 
-  // render inline citation tags
-  let answerHtml = escHtml(data.answer);
-  (data.citations || []).forEach(c => {
-    const tag = `<span class="cite-tag" id="ctag_${c.evidence_id}" onclick="highlightCitation('${c.evidence_id}')">${c.evidence_id}</span>`;
-    answerHtml = answerHtml.replace(new RegExp(`\\[${c.evidence_id}\\]`, 'g'), tag);
+  let atxt=esc(data.answer);
+  (data.citations||[]).forEach(c=>{
+    const tag=`<span class="ctag" id="ct_${c.evidence_id}" onclick="hlCite('${c.evidence_id}')">[${c.evidence_id}]</span>`;
+    atxt=atxt.replace(new RegExp(`\\[${c.evidence_id}\\]`,'g'),tag);
   });
 
-  const modClass = m => ({ text:'mod-text', table:'mod-table', figure:'mod-figure' }[m] || 'mod-text');
-
-  const citationsHtml = (data.citations||[]).length ? `
-    <div class="citations-title">Citations (${data.citations.length})</div>
-    ${data.citations.map(c => `
-      <div class="citation-item" id="citem_${c.evidence_id}" onclick="highlightCitation('${c.evidence_id}')">
-        <div class="cite-badge">${c.evidence_id}</div>
-        <div class="cite-body">
-          <div class="cite-meta">
-            Page ${c.page}
-            <span class="modality-badge ${modClass(c.modality)}">${c.modality}</span>
-            · bbox (${Math.round(c.bbox.x0)}, ${Math.round(c.bbox.y0)}, ${Math.round(c.bbox.x1)}, ${Math.round(c.bbox.y1)})
-          </div>
-          <div class="cite-snippet">${escHtml((c.snippet||'').slice(0,180))}${(c.snippet||'').length>180?'…':''}</div>
+  const chtml=(data.citations||[]).length?`
+    <div class="ctitle">Citations (${data.citations.length})</div>
+    ${data.citations.map(c=>`
+      <div class="citem" id="ci_${c.evidence_id}" onclick="hlCite('${c.evidence_id}')">
+        <div class="cbadge">${c.evidence_id}</div>
+        <div class="cbody">
+          <div class="cmeta">Page ${c.page}<span class="mbadge ${mc(c.modality)}">${mn(c.modality)}</span> · (${Math.round(c.bbox.x0)},${Math.round(c.bbox.y0)},${Math.round(c.bbox.x1)},${Math.round(c.bbox.y1)})</div>
+          <div class="csnip">${esc((c.snippet||'').slice(0,180))}${(c.snippet||'').length>180?'…':''}</div>
         </div>
-      </div>`).join('')}` : '';
+      </div>`).join('')}`:'';
 
-  const timingsHtml = data.timings_ms ? `
+  const thtml=data.timings_ms?`
     <div class="timings">
-      ${Object.entries(data.timings_ms).map(([k,v]) => `<div class="timing-chip">${k}: <span>${v}ms</span></div>`).join('')}
-    </div>` : '';
+      ${Object.entries(data.timings_ms).map(([k,v])=>`<div class="tchip">${k}: <b>${v}ms</b></div>`).join('')}
+    </div>`:'';
 
-  const insufficient = data.insufficient ? `<div style="color:var(--danger);font-size:13px;margin-bottom:12px">⚠ Insufficient evidence in the indexed documents</div>` : '';
-
-  const card = document.createElement('div');
-  card.className = 'answer-card';
-  card.innerHTML = `
-    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:600">Q: ${escHtml(query)}</div>
-    ${insufficient}
-    <div class="answer-text">${answerHtml}</div>
-    ${timingsHtml}
-    ${citationsHtml}
-    <div id="pageViewer_${Date.now()}" class="page-viewer" style="display:none">
-      <div class="page-viewer-title">📄 Page Preview</div>
-      <div class="page-canvas-wrap" id="canvasWrap"></div>
-    </div>`;
-  pane.insertAdjacentElement('afterbegin', card);
+  const card=document.createElement('div');
+  card.className='acard';
+  card.innerHTML=`
+    <div class="qline">
+      <span>Q:</span><span class="qtxt">${esc(query)}</span>
+      ${data.cached?'<span class="cache-badge">CACHED</span>':''}
+    </div>
+    ${data.insufficient?`<div class="insuf">⚠ Insufficient evidence in indexed documents</div>`:''}
+    <div class="ans-text">${atxt}</div>
+    ${thtml}${chtml}`;
+  pane.insertAdjacentElement('afterbegin',card);
 }
 
-function highlightCitation(eid) {
-  // toggle active on cite tags
-  document.querySelectorAll('.cite-tag').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.citation-item').forEach(t => t.classList.remove('highlighted'));
-  const tag = document.getElementById(`ctag_${eid}`);
-  const item = document.getElementById(`citem_${eid}`);
-  if (tag) tag.classList.add('active');
-  if (item) { item.classList.add('highlighted'); item.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+function hlCite(eid){
+  document.querySelectorAll('.ctag').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.citem').forEach(t=>t.classList.remove('hl'));
+  document.getElementById('ct_'+eid)?.classList.add('active');
+  const ci=document.getElementById('ci_'+eid);
+  if(ci){ci.classList.add('hl');ci.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
 
-// ── toast ──
-function toast(msg, isErr=false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (isErr ? ' error' : '');
-  setTimeout(() => t.className = 'toast', 3500);
+function renderHistory(){
+  const el=document.getElementById('hlist');
+  if(!history.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px">No queries yet</div>';return;}
+  el.innerHTML=history.map(q=>`
+    <div class="hist-item" onclick="document.getElementById('qi').value=${JSON.stringify(q)}" title="${esc(q)}">${esc(q)}</div>`).join('');
 }
 
-function escHtml(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function clearHistory(){
+  history=[];renderHistory();
+  document.getElementById('apane').innerHTML='<div class="empty" id="estat"><div class="eicon">🧠</div><p>Upload a PDF and ask a question to get grounded answers with source citations</p></div>';
 }
+
+function toast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(err?' err':'');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.className='toast',3500);
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
 </body>
 </html>
