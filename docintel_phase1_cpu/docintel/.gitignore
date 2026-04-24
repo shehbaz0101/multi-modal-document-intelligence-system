@@ -25,3 +25,46 @@ data/
 
 # OS
 .DS_Store
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Environment — NEVER commit these
+.env
+.env.local
+.env.production
+.env.staging
+
+# Data — local storage, can be large
+data/
+!data/eval/
+!data/eval/.gitkeep
+
+# Models — downloaded at runtime
+models/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Temp files
+*.tmp
+*.temp
