@@ -5,10 +5,10 @@ Four-stage funnel:
   1. Router     — QueryPlan (intent, filters, weights)
   2. Retrieve   — fire all enabled indexes in parallel
   3. Fuse       — RRF across their ranked lists
-  4. Rerank     — cross-encoder on the top-N   (Phase 3; wired but optional)
+  4. Rerank     — cross-encoder or visual reranker on the top-N
 
-Output: an ordered list of EvidenceItem. The generator is downstream; this
-layer does not call any LLM.
+Phase 2 adds the visual_reranker slot. It runs only when the query is
+flagged as visual-intent (see router) and the reranker is configured.
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from typing import Protocol
 
 import numpy as np
 
-from app.schema import BBox, EvidenceItem, Modality, QueryPlan
+from app.schema import BBox, EvidenceItem, Modality, QueryPlan, QueryIntent
 from embedding.text import TextEmbedder
 from indexing.base import BlockIndex, IndexHit
 from retrieval.fusion import reciprocal_rank_fusion
@@ -31,6 +31,10 @@ class Reranker(Protocol):
     def rerank(self, query: str, hits: list[IndexHit], top_k: int) -> list[IndexHit]: ...
 
 
+class VisualReranker(Protocol):
+    def rerank(self, query: str, hits: list[IndexHit], top_k: int) -> list[IndexHit]: ...
+
+
 class Retriever:
     def __init__(
         self,
@@ -38,17 +42,18 @@ class Retriever:
         text_embedder: TextEmbedder,
         sparse_index: BlockIndex | None,
         dense_index: BlockIndex | None,
-        visual_index: BlockIndex | None = None,   # Phase 2
-        reranker: Reranker | None = None,          # Phase 3
+        visual_index: BlockIndex | None = None,
+        reranker: Reranker | None = None,
+        visual_reranker: VisualReranker | None = None,   # Phase 2
     ):
         self.text_embedder = text_embedder
         self.sparse_index = sparse_index
         self.dense_index = dense_index
         self.visual_index = visual_index
         self.reranker = reranker
+        self.visual_reranker = visual_reranker
 
     def retrieve(self, plan: QueryPlan) -> tuple[list[EvidenceItem], dict[str, int]]:
-        """Run the funnel. Returns (evidence_pack, timings_ms)."""
         timings: dict[str, int] = {}
 
         # ---- Stage 2: parallel retrieval ----
@@ -85,7 +90,7 @@ class Retriever:
                 try:
                     ranked_lists[name] = f.result()
                 except Exception as e:
-                    log.warning("retriever failed", extra={"index": name, "err": str(e)})
+                    log.warning("retriever failed index=%s err=%s", name, e)
                     ranked_lists[name] = []
         timings["retrieve_ms"] = int((time.perf_counter() - t0) * 1000)
 
@@ -94,14 +99,29 @@ class Retriever:
         fused = reciprocal_rank_fusion(ranked_lists, weights=plan.weights)
         timings["fuse_ms"] = int((time.perf_counter() - t0) * 1000)
 
-        # ---- Stage 4: rerank (Phase 3) ----
+        # ---- Stage 4a: text rerank ----
         t0 = time.perf_counter()
         if self.reranker and fused:
             rerank_pool = fused[: max(plan.final_k * 4, 30)]
-            reranked = self.reranker.rerank(plan.query, rerank_pool, top_k=plan.final_k)
+            reranked = self.reranker.rerank(plan.query, rerank_pool, top_k=plan.final_k * 3)
         else:
-            reranked = fused[: plan.final_k]
+            reranked = fused[: plan.final_k * 3]
         timings["rerank_ms"] = int((time.perf_counter() - t0) * 1000)
+
+        # ---- Stage 4b: visual rerank (Phase 2) ----
+        t0 = time.perf_counter()
+        if (
+            self.visual_reranker
+            and plan.intent == QueryIntent.VISUAL
+            and reranked
+        ):
+            log.info("visual rerank triggered for query: '%s'", plan.query[:60])
+            reranked = self.visual_reranker.rerank(
+                plan.query, reranked, top_k=plan.final_k
+            )
+        else:
+            reranked = reranked[: plan.final_k]
+        timings["visual_rerank_ms"] = int((time.perf_counter() - t0) * 1000)
 
         # ---- Materialize evidence pack ----
         evidence = [self._hit_to_evidence(h, i) for i, h in enumerate(reranked)]

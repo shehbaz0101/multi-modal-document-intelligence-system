@@ -1,6 +1,10 @@
 """
 Orchestrator — the public API.
 
+Phase 2 additions:
+  - Visual reranker slot (Gemini-based, CPU-friendly)
+  - Auto-enabled for visual-intent queries when config says so
+
 Two methods:
   intel.ingest(file_path, tenant_id, ...)  -> DocumentMeta
   intel.ask(query, tenant_id, ...)         -> Answer
@@ -32,19 +36,16 @@ log = logging.getLogger(__name__)
 class DocIntel:
     def __init__(self, settings: AppSettings | None = None):
         self.s = settings or get_settings()
-        if self.s.retrieval.rerank_enabled:
-            from retrieval.reranker import CrossEncoderReranker
-            self.retriever.reranker = CrossEncoderReranker(self.s.retrieval.rerank_model)
-
-        # Gemini API key — reads GEMINI_API_KEY from env if not set in config
         gemini_key = self.s.generation.api_key or os.environ.get("GEMINI_API_KEY")
 
         self.storage: Storage = build_storage(
             self.s.storage.backend, self.s.storage.root
         )
-        self.parser = build_parser(
-            self.s.parser.primary, storage=self.storage
-        ) if self.s.parser.primary == "cpu" else build_parser(self.s.parser.primary)
+        self.parser = (
+            build_parser(self.s.parser.primary, storage=self.storage)
+            if self.s.parser.primary == "cpu"
+            else build_parser(self.s.parser.primary)
+        )
 
         self.text_embedder = build_text_embedder(self.s.embedding.text_model)
 
@@ -66,14 +67,42 @@ class DocIntel:
             collection=self.s.index.text_collection,
             dim=self.s.embedding.text_dim,
             api_key=self.s.index.vector_api_key,
+            storage_root=self.s.storage.root,   # needed for page_image_uri
         )
+
+        # ── cross-encoder reranker (Phase 3) ──
+        reranker = None
+        if self.s.retrieval.rerank_enabled:
+            try:
+                from retrieval.reranker import CrossEncoderReranker
+                reranker = CrossEncoderReranker(self.s.retrieval.rerank_model)
+                log.info("text reranker enabled: %s", self.s.retrieval.rerank_model)
+            except Exception as e:
+                log.warning("text rerank failed to load: %s", e)
+
+        # ── visual reranker (Phase 2 — Gemini-based) ──
+        visual_reranker = None
+        if self.s.visual_rerank.enabled:
+            try:
+                from retrieval.visual_rerank import GeminiVisualReranker
+                visual_reranker = GeminiVisualReranker(
+                    model=self.s.visual_rerank.model,
+                    storage=self.storage,
+                    api_key=gemini_key,
+                    max_pages=self.s.visual_rerank.max_pages,
+                    score_weight=self.s.visual_rerank.score_weight,
+                )
+                log.info("visual reranker enabled: %s", self.s.visual_rerank.model)
+            except Exception as e:
+                log.warning("visual rerank failed to load: %s", e)
 
         self.retriever = Retriever(
             text_embedder=self.text_embedder,
             sparse_index=self.sparse_index,
             dense_index=self.dense_index,
-            visual_index=None,   # Phase 2
-            reranker=None,        # Phase 3
+            visual_index=None,
+            reranker=reranker,
+            visual_reranker=visual_reranker,
         )
 
         self.generator = GroundedGenerator(
@@ -85,7 +114,6 @@ class DocIntel:
         )
 
     # ---------- ingest ----------
-
     def ingest(
         self,
         file_path: str | Path,
@@ -106,7 +134,8 @@ class DocIntel:
             acl_read=acl_read,
             doc_type=doc_type,
         )
-        log.info("ingested doc_id=%s pages=%d", result.meta.doc_id[:12], len(result.pages))
+        log.info("ingested doc_id=%s pages=%d",
+                 result.meta.doc_id[:12], len(result.pages))
 
         self.parser.parse(result.pages)
         self.captioner.caption_pages(result.pages)
@@ -128,7 +157,6 @@ class DocIntel:
         return result.meta
 
     # ---------- ask ----------
-
     def ask(
         self,
         query: str,

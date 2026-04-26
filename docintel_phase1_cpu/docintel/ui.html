@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>DocIntel</title>
 <style>
 :root{--bg:#0d0f18;--surface:#151823;--surface2:#1c2033;--border:#252840;--accent:#7c6dfa;--accent2:#00c9a7;--text:#e2e8f0;--muted:#6b7280;--danger:#f87171;--warn:#fbbf24;--r:10px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;height:100vh;overflow:hidden;}
 .shell{display:grid;grid-template-columns:340px 1fr;grid-template-rows:52px 1fr;height:100vh;}
-
-/* header */
 header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border);z-index:10;}
 .logo{font-size:20px;font-weight:800;letter-spacing:-.5px;}
 .logo span{color:var(--accent);}
@@ -21,13 +17,10 @@ header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;
 .dot.err{background:var(--danger);}
 .hbtn{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer;transition:all .15s;}
 .hbtn:hover{border-color:var(--accent);color:var(--accent);}
-
-/* left */
+.hbtn.on{background:rgba(124,109,250,.15);color:var(--accent);border-color:var(--accent);}
 .left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
 .sec{padding:14px 16px;border-bottom:1px solid var(--border);}
 .sec-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;}
-
-/* drop zone */
 .drop{border:2px dashed var(--border);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
 .drop:hover,.drop.over{border-color:var(--accent);background:rgba(124,109,250,.05);}
 .drop input{display:none;}
@@ -36,8 +29,6 @@ header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;
 .drop p strong{color:var(--text);}
 .pbar{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden;display:none;}
 .pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .3s;}
-
-/* doc list */
 .dlist{flex:1;overflow-y:auto;padding:6px;}
 .ditem{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:2px;border:1px solid transparent;}
 .ditem:hover{background:rgba(255,255,255,.03);}
@@ -49,8 +40,6 @@ header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;
 .ddel{opacity:0;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 4px;border-radius:4px;transition:all .15s;flex-shrink:0;}
 .ditem:hover .ddel{opacity:1;}
 .ddel:hover{color:var(--danger);background:rgba(248,113,113,.1);}
-
-/* query */
 .qwrap{position:relative;}
 .qwrap textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);padding:10px 42px 10px 12px;font-size:13px;resize:none;outline:none;transition:border .2s;font-family:inherit;line-height:1.5;}
 .qwrap textarea:focus{border-color:var(--accent);}
@@ -58,38 +47,29 @@ header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;
 .qbtn{position:absolute;right:8px;bottom:8px;background:var(--accent);border:none;border-radius:6px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:opacity .2s;}
 .qbtn:disabled{opacity:.35;cursor:default;}
 .hint{font-size:10px;color:var(--muted);margin-top:5px;}
-
-/* history */
 .hist-list{padding:6px;}
 .hist-item{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted);transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
 .hist-item:hover{background:rgba(255,255,255,.04);color:var(--text);}
-
-/* right */
 .right{display:flex;flex-direction:column;overflow:hidden;}
 .apane{flex:1;overflow-y:auto;padding:20px;}
-
-/* empty */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:10px;}
 .empty .eicon{font-size:44px;}
 .empty p{font-size:13px;text-align:center;max-width:300px;line-height:1.7;}
-
-/* answer card */
 .acard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .qline{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
 .qline .qtxt{color:var(--text);}
 .cache-badge{font-size:9px;background:rgba(0,201,167,.15);color:var(--accent2);border:1px solid rgba(0,201,167,.3);padding:1px 6px;border-radius:4px;font-weight:700;}
-.ans-text{font-size:14px;line-height:1.8;}
+.stream-badge{font-size:9px;background:rgba(124,109,250,.15);color:var(--accent);border:1px solid rgba(124,109,250,.3);padding:1px 6px;border-radius:4px;font-weight:700;}
+.ans-text{font-size:14px;line-height:1.8;min-height:24px;}
+.ans-text.streaming::after{content:"▊";color:var(--accent);animation:blink 1s infinite;margin-left:2px;}
+@keyframes blink{50%{opacity:0;}}
 .ctag{display:inline-block;background:rgba(124,109,250,.18);color:var(--accent);border:1px solid rgba(124,109,250,.35);border-radius:4px;font-size:10px;font-weight:700;padding:1px 5px;cursor:pointer;transition:all .15s;margin:0 1px;}
 .ctag:hover,.ctag.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .insuf{color:var(--danger);font-size:12px;margin-bottom:8px;padding:8px 12px;background:rgba(248,113,113,.08);border-radius:6px;border:1px solid rgba(248,113,113,.2);}
-
-/* timings */
 .timings{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .tchip{font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted);}
 .tchip b{color:var(--text);}
-
-/* citations */
 .ctitle{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:14px 0 8px;}
 .citem{display:flex;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;}
 .citem:hover{border-color:var(--accent);}
@@ -102,52 +82,43 @@ header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;
 .mt{background:rgba(0,201,167,.12);color:var(--accent2);}
 .mtb{background:rgba(251,191,36,.12);color:var(--warn);}
 .mf{background:rgba(248,113,113,.12);color:var(--danger);}
-
-/* loading */
 .loading-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
 .spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .6s linear infinite;flex-shrink:0;}
 @keyframes sp{to{transform:rotate(360deg)}}
-
-/* metrics panel */
 .mpanel{position:fixed;top:62px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;width:260px;z-index:100;display:none;box-shadow:0 8px 32px rgba(0,0,0,.5);}
 .mpanel.show{display:block;}
 .mrow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
 .mrow:last-child{border:none;}
 .mrow span:first-child{color:var(--muted);}
 .mrow span:last-child{font-weight:600;}
-
-/* toast */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:12px;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(60px);opacity:0;transition:all .25s;max-width:320px;}
 .toast.show{transform:none;opacity:1;}
 .toast.err{border-color:var(--danger);}
-
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-</style>
-</head>
+</style></head>
 <body>
 <div class="shell">
 
 <header>
   <div class="logo">Doc<span>Intel</span></div>
-  <div class="pill">v1.0</div>
+  <div class="pill">v3.0</div>
   <div class="hstatus">
     <div class="dot" id="dot"></div>
     <span id="statusTxt">checking...</span>
   </div>
+  <button class="hbtn on" id="streamBtn" onclick="toggleStream()">⚡ Streaming</button>
   <button class="hbtn" onclick="toggleMetrics()">📊 Metrics</button>
-  <button class="hbtn" onclick="clearHistory()">🗑 Clear</button>
+  <button class="hbtn" onclick="clearAll()">🗑 Clear</button>
 </header>
 
-<!-- metrics panel -->
 <div class="mpanel" id="metricsPanel">
   <div class="sec-title" style="margin-bottom:10px">Live Metrics</div>
-  <div class="mrow"><span>Queries total</span><span id="mAskTotal">—</span></div>
+  <div class="mrow"><span>Queries</span><span id="mAskTotal">—</span></div>
   <div class="mrow"><span>Cache hits</span><span id="mCacheHits">—</span></div>
-  <div class="mrow"><span>Cache hit rate</span><span id="mCacheRate">—</span></div>
+  <div class="mrow"><span>Hit rate</span><span id="mCacheRate">—</span></div>
   <div class="mrow"><span>Avg latency</span><span id="mAvgLat">—</span></div>
-  <div class="mrow"><span>Ingest errors</span><span id="mIngErr">—</span></div>
-  <div class="mrow"><span>Ask errors</span><span id="mAskErr">—</span></div>
-  <div class="mrow"><span>Uptime</span><span id="mUptime">—</span></div>
+  <div class="mrow"><span>Errors</span><span id="mAskErr">—</span></div>
+  <div class="mrow"><span>Tracing</span><span id="mTracing">—</span></div>
 </div>
 
 <div class="left">
@@ -168,11 +139,11 @@ header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 20px;
     <div class="sec-title">Ask</div>
     <div class="qwrap">
       <textarea id="qi" rows="4" placeholder="What is this document about?
-What are the key findings?
-List all skills mentioned..."></textarea>
+Show me the chart about revenue
+Compare the tables..."></textarea>
       <button class="qbtn" id="abtn" onclick="doAsk()">➤</button>
     </div>
-    <div class="hint">Enter to submit · Shift+Enter for new line</div>
+    <div class="hint">Enter to submit · Shift+Enter for newline</div>
   </div>
 
   <div class="sec" style="flex:1;overflow:hidden;display:flex;flex-direction:column;border-bottom:none;">
@@ -187,7 +158,7 @@ List all skills mentioned..."></textarea>
   <div class="apane" id="apane">
     <div class="empty" id="estat">
       <div class="eicon">🧠</div>
-      <p>Upload a PDF and ask a question to get grounded answers with source citations</p>
+      <p>Upload a PDF and ask a question · Streaming mode shows answers as they generate</p>
     </div>
   </div>
 </div>
@@ -197,16 +168,16 @@ List all skills mentioned..."></textarea>
 
 <script>
 const API='http://localhost:8000';
-let docs=[],history=[],asking=false,metricsOpen=false;
+let docs=[],history=[],asking=false,metricsOpen=false,streamMode=true;
 
-// health
 async function checkHealth(){
   try{
     const r=await fetch(`${API}/health`);
     const d=await r.json();
     const ok=d.status==='ok';
     document.getElementById('dot').className='dot'+(ok?' ok':' err');
-    document.getElementById('statusTxt').textContent=ok?`${d.model}`:'degraded';
+    document.getElementById('statusTxt').textContent=ok?d.model:'degraded';
+    if(metricsOpen)document.getElementById('mTracing').textContent=d.tracing;
   }catch{
     document.getElementById('dot').className='dot err';
     document.getElementById('statusTxt').textContent='offline';
@@ -214,7 +185,6 @@ async function checkHealth(){
 }
 checkHealth();setInterval(checkHealth,10000);
 
-// metrics
 async function fetchMetrics(){
   try{
     const r=await fetch(`${API}/metrics`);
@@ -223,18 +193,21 @@ async function fetchMetrics(){
     document.getElementById('mCacheHits').textContent=d.ask_cache_hits;
     document.getElementById('mCacheRate').textContent=(d.cache_hit_rate*100).toFixed(1)+'%';
     document.getElementById('mAvgLat').textContent=d.ask_avg_latency_ms+'ms';
-    document.getElementById('mIngErr').textContent=d.ingest_errors;
     document.getElementById('mAskErr').textContent=d.ask_errors;
   }catch{}
 }
 function toggleMetrics(){
   metricsOpen=!metricsOpen;
   document.getElementById('metricsPanel').className='mpanel'+(metricsOpen?' show':'');
-  if(metricsOpen)fetchMetrics();
+  if(metricsOpen){fetchMetrics();checkHealth();}
+}
+function toggleStream(){
+  streamMode=!streamMode;
+  document.getElementById('streamBtn').className='hbtn'+(streamMode?' on':'');
+  toast(streamMode?'Streaming mode ON':'Streaming mode OFF');
 }
 setInterval(()=>{if(metricsOpen)fetchMetrics();},5000);
 
-// drag-drop
 const dz=document.getElementById('dz');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
 dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
@@ -251,8 +224,7 @@ async function handleFiles(files){
 async function ingest(file){
   const pb=document.getElementById('pbar'),pf=document.getElementById('pfill');
   pb.style.display='block';pf.style.width='20%';
-  const fd=new FormData();
-  fd.append('file',file);fd.append('tenant_id','default');
+  const fd=new FormData();fd.append('file',file);fd.append('tenant_id','default');
   try{
     pf.style.width='60%';
     const r=await fetch(`${API}/ingest`,{method:'POST',body:fd});
@@ -288,7 +260,6 @@ async function delDoc(e,doc_id,i){
   }catch{toast('Delete failed',true);}
 }
 
-// ask
 document.getElementById('qi').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doAsk();}
 });
@@ -301,53 +272,156 @@ async function doAsk(){
   document.getElementById('abtn').disabled=true;
   document.getElementById('estat').style.display='none';
 
-  // add to history
-  history.unshift(q);
-  if(history.length>20)history.pop();
-  renderHistory();
+  history.unshift(q);if(history.length>20)history.pop();renderHistory();
 
+  if(streamMode){await askStream(q);}
+  else{await askBlocking(q);}
+
+  asking=false;
+  document.getElementById('abtn').disabled=false;
+}
+
+async function askBlocking(q){
   const pane=document.getElementById('apane');
   const lid='l'+Date.now();
   pane.insertAdjacentHTML('afterbegin',`
     <div id="${lid}" class="loading-card">
       <div class="spin"></div>
-      <span style="color:var(--muted);font-size:13px">Retrieving evidence · generating grounded answer…</span>
+      <span style="color:var(--muted);font-size:13px">Retrieving · generating…</span>
     </div>`);
-
   try{
     const r=await fetch(`${API}/ask`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({query:q,tenant_id:'default',user_ids:[]})
     });
     if(!r.ok){const e=await r.json();throw new Error(e.detail||'Ask failed');}
     const d=await r.json();
     document.getElementById(lid)?.remove();
-    renderAnswer(q,d);
+    renderAnswer(q,d,false);
   }catch(e){
     document.getElementById(lid)?.remove();
     toast(e.message,true);
-  }finally{
-    asking=false;
-    document.getElementById('abtn').disabled=false;
   }
 }
 
-function renderAnswer(query,data){
+async function askStream(q){
   const pane=document.getElementById('apane');
+  const cardId='c'+Date.now();
+  // Create card upfront, fill in as events arrive
+  pane.insertAdjacentHTML('afterbegin',`
+    <div id="${cardId}" class="acard">
+      <div class="qline">
+        <span>Q:</span><span class="qtxt">${esc(q)}</span>
+        <span class="stream-badge">STREAMING</span>
+      </div>
+      <div class="ans-text streaming" id="${cardId}_ans">
+        <span style="color:var(--muted);font-size:12px"><span class="spin" style="display:inline-block;vertical-align:middle"></span> retrieving evidence…</span>
+      </div>
+      <div id="${cardId}_after"></div>
+    </div>`);
+
+  const ansEl=document.getElementById(cardId+'_ans');
+  const afterEl=document.getElementById(cardId+'_after');
+  let citations=[],fullText='',timings={};
+
+  try{
+    const r=await fetch(`${API}/ask/stream`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({query:q,tenant_id:'default',user_ids:[]})
+    });
+    if(!r.ok){throw new Error('Stream failed: '+r.status);}
+
+    const reader=r.body.getReader();
+    const decoder=new TextDecoder();
+    let buffer='';
+
+    while(true){
+      const{done,value}=await reader.read();
+      if(done)break;
+      buffer+=decoder.decode(value,{stream:true});
+      const events=buffer.split('\n\n');
+      buffer=events.pop()||'';
+      for(const ev of events){
+        const lines=ev.split('\n');
+        let event='message',data='';
+        for(const line of lines){
+          if(line.startsWith('event: '))event=line.slice(7);
+          else if(line.startsWith('data: '))data=line.slice(6);
+        }
+        if(!data)continue;
+        let payload;try{payload=JSON.parse(data);}catch{continue;}
+
+        if(event==='status'){
+          if(payload.stage==='generating'){
+            ansEl.innerHTML='';
+          }
+        }else if(event==='citations'){
+          citations=payload;
+        }else if(event==='token'){
+          fullText+=payload.text;
+          ansEl.textContent=fullText;
+        }else if(event==='done'){
+          timings=payload.timings_ms||{};
+          // Final render — replace plain text with formatted version
+          let html=esc(fullText);
+          (citations||[]).forEach(c=>{
+            const tag=`<span class="ctag" id="ct_${c.evidence_id}_${cardId}" onclick="hlCite('${c.evidence_id}','${cardId}')">[${c.evidence_id}]</span>`;
+            html=html.replace(new RegExp(`\\[${c.evidence_id}\\]`,'g'),tag);
+          });
+          ansEl.innerHTML=html;
+          ansEl.classList.remove('streaming');
+          renderTail(afterEl,citations,timings,cardId);
+        }else if(event==='error'){
+          throw new Error(payload.detail||'stream error');
+        }
+      }
+    }
+  }catch(e){
+    ansEl.innerHTML=`<span style="color:var(--danger)">${esc(e.message)}</span>`;
+    ansEl.classList.remove('streaming');
+    toast(e.message,true);
+  }
+}
+
+function renderTail(el,citations,timings,cardId){
+  const mc=m=>({text:'mt',table:'mtb',figure:'mf'}[m]||'mt');
+  const mn=m=>({text:'Text',table:'Table',figure:'Figure'}[m]||m);
+
+  const thtml=Object.keys(timings).length?`
+    <div class="timings">
+      ${Object.entries(timings).map(([k,v])=>`<div class="tchip">${k}: <b>${v}ms</b></div>`).join('')}
+    </div>`:'';
+
+  const chtml=(citations||[]).length?`
+    <div class="ctitle">Citations (${citations.length})</div>
+    ${citations.map(c=>`
+      <div class="citem" id="ci_${c.evidence_id}_${cardId}" onclick="hlCite('${c.evidence_id}','${cardId}')">
+        <div class="cbadge">${c.evidence_id}</div>
+        <div class="cbody">
+          <div class="cmeta">Page ${c.page}<span class="mbadge ${mc(c.modality)}">${mn(c.modality)}</span> · (${Math.round(c.bbox.x0)},${Math.round(c.bbox.y0)},${Math.round(c.bbox.x1)},${Math.round(c.bbox.y1)})</div>
+          <div class="csnip">${esc((c.snippet||'').slice(0,180))}${(c.snippet||'').length>180?'…':''}</div>
+        </div>
+      </div>`).join('')}`:'';
+
+  el.innerHTML=thtml+chtml;
+}
+
+function renderAnswer(query,data,streamed){
+  const pane=document.getElementById('apane');
+  const cardId='c'+Date.now();
   const mc=m=>({text:'mt',table:'mtb',figure:'mf'}[m]||'mt');
   const mn=m=>({text:'Text',table:'Table',figure:'Figure'}[m]||m);
 
   let atxt=esc(data.answer);
   (data.citations||[]).forEach(c=>{
-    const tag=`<span class="ctag" id="ct_${c.evidence_id}" onclick="hlCite('${c.evidence_id}')">[${c.evidence_id}]</span>`;
+    const tag=`<span class="ctag" id="ct_${c.evidence_id}_${cardId}" onclick="hlCite('${c.evidence_id}','${cardId}')">[${c.evidence_id}]</span>`;
     atxt=atxt.replace(new RegExp(`\\[${c.evidence_id}\\]`,'g'),tag);
   });
 
   const chtml=(data.citations||[]).length?`
     <div class="ctitle">Citations (${data.citations.length})</div>
     ${data.citations.map(c=>`
-      <div class="citem" id="ci_${c.evidence_id}" onclick="hlCite('${c.evidence_id}')">
+      <div class="citem" id="ci_${c.evidence_id}_${cardId}" onclick="hlCite('${c.evidence_id}','${cardId}')">
         <div class="cbadge">${c.evidence_id}</div>
         <div class="cbody">
           <div class="cmeta">Page ${c.page}<span class="mbadge ${mc(c.modality)}">${mn(c.modality)}</span> · (${Math.round(c.bbox.x0)},${Math.round(c.bbox.y0)},${Math.round(c.bbox.x1)},${Math.round(c.bbox.y1)})</div>
@@ -361,38 +435,37 @@ function renderAnswer(query,data){
     </div>`:'';
 
   const card=document.createElement('div');
-  card.className='acard';
+  card.id=cardId;card.className='acard';
   card.innerHTML=`
     <div class="qline">
       <span>Q:</span><span class="qtxt">${esc(query)}</span>
       ${data.cached?'<span class="cache-badge">CACHED</span>':''}
     </div>
-    ${data.insufficient?`<div class="insuf">⚠ Insufficient evidence in indexed documents</div>`:''}
+    ${data.insufficient?`<div class="insuf">⚠ Insufficient evidence</div>`:''}
     <div class="ans-text">${atxt}</div>
     ${thtml}${chtml}`;
   pane.insertAdjacentElement('afterbegin',card);
 }
 
-function hlCite(eid){
-  document.querySelectorAll('.ctag').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.citem').forEach(t=>t.classList.remove('hl'));
-  document.getElementById('ct_'+eid)?.classList.add('active');
-  const ci=document.getElementById('ci_'+eid);
+function hlCite(eid,cardId){
+  const card=document.getElementById(cardId);
+  if(!card)return;
+  card.querySelectorAll('.ctag').forEach(t=>t.classList.remove('active'));
+  card.querySelectorAll('.citem').forEach(t=>t.classList.remove('hl'));
+  document.getElementById(`ct_${eid}_${cardId}`)?.classList.add('active');
+  const ci=document.getElementById(`ci_${eid}_${cardId}`);
   if(ci){ci.classList.add('hl');ci.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
 
 function renderHistory(){
   const el=document.getElementById('hlist');
   if(!history.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px">No queries yet</div>';return;}
-  el.innerHTML=history.map(q=>`
-    <div class="hist-item" onclick="document.getElementById('qi').value=${JSON.stringify(q)}" title="${esc(q)}">${esc(q)}</div>`).join('');
+  el.innerHTML=history.map(q=>`<div class="hist-item" onclick="document.getElementById('qi').value=${JSON.stringify(q)}" title="${esc(q)}">${esc(q)}</div>`).join('');
 }
-
-function clearHistory(){
+function clearAll(){
   history=[];renderHistory();
-  document.getElementById('apane').innerHTML='<div class="empty" id="estat"><div class="eicon">🧠</div><p>Upload a PDF and ask a question to get grounded answers with source citations</p></div>';
+  document.getElementById('apane').innerHTML='<div class="empty" id="estat"><div class="eicon">🧠</div><p>Upload a PDF and ask a question · Streaming mode shows answers as they generate</p></div>';
 }
-
 function toast(msg,err=false){
   const t=document.getElementById('toast');
   t.textContent=msg;
@@ -400,7 +473,6 @@ function toast(msg,err=false){
   clearTimeout(t._tid);
   t._tid=setTimeout(()=>t.className='toast',3500);
 }
-
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
 </body>
