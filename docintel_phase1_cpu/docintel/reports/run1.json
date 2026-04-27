@@ -1,0 +1,1176 @@
+{
+  "summary": {
+    "n_cases": 5,
+    "mrr": 0.0,
+    "citation_validity": 1.0,
+    "citation_coverage": 1.0,
+    "keyword_coverage": 0.9,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0
+  },
+  "cases": [
+    {
+      "query_id": "q1",
+      "retrieved_block_ids": [
+        "p1_b5",
+        "p1_b4",
+        "p1_b6",
+        "p1_b9",
+        "p1_b2",
+        "p1_b3",
+        "p1_b18",
+        "p1_b15"
+      ],
+      "answer": {
+        "query": "What is this document about?",
+        "answer_text": "This document is a resume [e1, e2, e3, e4, e6, e7]. It details the qualifications of an AI/ML undergraduate with hands-on experience in building LLM-powered applications, agentic AI systems, and Python backends [e0]. The individual is skilled in technologies such as FastAPI, Streamlit, LangGraph, and modern GenAI frameworks [e0]. They have experience integrating large language models, designing modular architectures, and automating workflows, with a passion for applying AI and machine learning to solve practical problems [e0]. The resume also lists their educational experience, including a B.Tech in Computer Science (AI/ML) from Matoshri Pratishthan Group of Institutions SOE, Nanded, from September 2022 to July 2026 [e5].",
+        "citations": [
+          {
+            "evidence_id": "e1",
+            "quote": null
+          },
+          {
+            "evidence_id": "e7",
+            "quote": null
+          },
+          {
+            "evidence_id": "e0",
+            "quote": null
+          },
+          {
+            "evidence_id": "e5",
+            "quote": null
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "e0",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b5",
+            "modality": "text",
+            "content": "- \u0088 AI/ML undergraduate with strong hands-on experience in building LLM-powered applications, agentic AI systems, and Python backends. Skilled in FastAPI, Streamlit, LangGraph, and modern GenAI frameworks for developing scalable, real-world AI solutions. Experienced in integrating multiple large language models, designing modular architectures, and automating workflows. Passionate about applying AI and machine learning to solve practical problems through clean, production-oriented systems.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 2.2478738,
+              "dense": 0.09728199
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e1",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b4",
+            "modality": "text",
+            "content": "**Summary**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.4186476
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e2",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b6",
+            "modality": "text",
+            "content": "**Relevant Coursework**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.35002908
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e3",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b9",
+            "modality": "text",
+            "content": "**Educational Experience**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.33091992
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e4",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b2",
+            "modality": "text",
+            "content": "**Education**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.29552624
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e5",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b3",
+            "modality": "text",
+            "content": "**Matoshri Pratishthan Group of Institutions SOE, Nanded** Sep 2022 \u2013 July 2026 Btech in Computer Science (AI / ML)",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.28883708
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e6",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b18",
+            "modality": "text",
+            "content": "**Technical Skills**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.2696882
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e7",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b15",
+            "modality": "text",
+            "content": "**Projects**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.2612077
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          }
+        ],
+        "model": "gemini-2.5-flash-lite",
+        "latency_ms": {
+          "plan": 2,
+          "retrieve_ms": 232,
+          "fuse_ms": 0,
+          "rerank_ms": 0,
+          "visual_rerank_ms": 0,
+          "generate_ms": 2263
+        },
+        "insufficient_evidence": false
+      },
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0,
+      "ndcg_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "citation_validity": 1.0,
+      "citation_coverage": 1.0,
+      "keyword_coverage": 1.0
+    },
+    {
+      "query_id": "q2",
+      "retrieved_block_ids": [
+        "p1_b18",
+        "p1_b5",
+        "p1_b21",
+        "p1_b9",
+        "p1_b7",
+        "p1_b19",
+        "p1_b3",
+        "p1_b2"
+      ],
+      "answer": {
+        "query": "What technical skills are listed?",
+        "answer_text": "The technical skills listed include AI/ML, LLM-powered applications, agentic AI systems, Python backends, FastAPI, Streamlit, LangGraph, modern GenAI frameworks, Machine Learning, Deep Learning, EDA, Feature Engineering, Model Evaluation, Linear Algebra, Probability & Statistics, Calculus, Gradio, Python, Flask, REST APIs, JSON, GPT, Claude, LLaMA, Mistral, Qwen, Prompt Engineering, RAG, Embeddings, LangChain, LlamaIndex, and Hugging Face [e0, e1, e2, e5].",
+        "citations": [
+          {
+            "evidence_id": "e0",
+            "quote": null
+          },
+          {
+            "evidence_id": "e5",
+            "quote": null
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "e0",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b18",
+            "modality": "text",
+            "content": "**Technical Skills**",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 11.722695,
+              "dense": 0.68046284
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e1",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b5",
+            "modality": "text",
+            "content": "- \u0088 AI/ML undergraduate with strong hands-on experience in building LLM-powered applications, agentic AI systems, and Python backends. Skilled in FastAPI, Streamlit, LangGraph, and modern GenAI frameworks for developing scalable, real-world AI solutions. Experienced in integrating multiple large language models, designing modular architectures, and automating workflows. Passionate about applying AI and machine learning to solve practical problems through clean, production-oriented systems.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 1.9039106,
+              "dense": 0.32129708
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e2",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b21",
+            "modality": "text",
+            "content": "**ML & Data Science:** Machine Learning, Deep Learning, EDA, Feature Engineering, Model Evaluation **Math:** Linear Algebra, Probability & Statistics, Calculus **Frontend:** Streamlit, Gradio",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.42695022
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e3",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b9",
+            "modality": "text",
+            "content": "**Educational Experience**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.33006394
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e4",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b7",
+            "modality": "text",
+            "content": "\u0088 AI",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.3137925
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e5",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b19",
+            "modality": "text",
+            "content": "**Programming & Backend:** Python, FastAPI, Flask, REST APIs, JSON **LLMs & GenAI:** GPT, Claude, LLaMA, Mistral, Qwen, Prompt Engineering, RAG, Embeddings **Frameworks:** LangChain, LlamaIndex, Hugging Face",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.30969164
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e6",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b3",
+            "modality": "text",
+            "content": "**Matoshri Pratishthan Group of Institutions SOE, Nanded** Sep 2022 \u2013 July 2026 Btech in Computer Science (AI / ML)",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.27667
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e7",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b2",
+            "modality": "text",
+            "content": "**Education**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.2472741
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          }
+        ],
+        "model": "gemini-2.5-flash-lite",
+        "latency_ms": {
+          "plan": 0,
+          "retrieve_ms": 149,
+          "fuse_ms": 0,
+          "rerank_ms": 0,
+          "visual_rerank_ms": 0,
+          "generate_ms": 2213
+        },
+        "insufficient_evidence": false
+      },
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0,
+      "ndcg_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "citation_validity": 1.0,
+      "citation_coverage": 1.0,
+      "keyword_coverage": 1.0
+    },
+    {
+      "query_id": "q3",
+      "retrieved_block_ids": [
+        "p1_b15",
+        "p1_b12",
+        "p1_b16",
+        "p1_b17",
+        "p1_b5",
+        "p1_b19",
+        "p1_b18",
+        "p1_b3"
+      ],
+      "answer": {
+        "query": "What projects has this person built?",
+        "answer_text": "The person has built automated deployment and execution pipelines [e1]. They also built \"AutoDev,\" an autonomous multi-agent AI system that converts natural-language requirements into functional web applications using FastAPI and LangGraph [e2]. Additionally, they developed the \"Multi-Model Chat Arena,\" a Streamlit-based LLM interface for comparing responses from Gemini and GPT-3.5, featuring modular abstraction and secure API key handling [e3].",
+        "citations": [
+          {
+            "evidence_id": "e1",
+            "quote": null
+          },
+          {
+            "evidence_id": "e2",
+            "quote": null
+          },
+          {
+            "evidence_id": "e3",
+            "quote": null
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "e0",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b15",
+            "modality": "text",
+            "content": "**Projects**",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 7.135044,
+              "dense": 0.4531813
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e1",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b12",
+            "modality": "text",
+            "content": "- \u0088 Built automated deployment and execution pipelines.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 4.8455873,
+              "dense": 0.21426444
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e2",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b16",
+            "modality": "text",
+            "content": "- \u0088 AutoDev: Built an autonomous multi-agent AI system using FastAPI and LangGraph that converts natural-language requirements into fully functional, locally deployed web applications via state-machine\u2013governed agent orchestration.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 2.8666158,
+              "dense": 0.19431418
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e3",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b17",
+            "modality": "text",
+            "content": "- \u0088 Multi-Model Chat Arena: Built a Streamlit-based LLM interface to compare responses from Gemini and GPT-3.5 with modular abstraction and secure API key handling.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 3.1753907,
+              "dense": 0.083645694
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e4",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b5",
+            "modality": "text",
+            "content": "- \u0088 AI/ML undergraduate with strong hands-on experience in building LLM-powered applications, agentic AI systems, and Python backends. Skilled in FastAPI, Streamlit, LangGraph, and modern GenAI frameworks for developing scalable, real-world AI solutions. Experienced in integrating multiple large language models, designing modular architectures, and automating workflows. Passionate about applying AI and machine learning to solve practical problems through clean, production-oriented systems.",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.32962376
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e5",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b19",
+            "modality": "text",
+            "content": "**Programming & Backend:** Python, FastAPI, Flask, REST APIs, JSON **LLMs & GenAI:** GPT, Claude, LLaMA, Mistral, Qwen, Prompt Engineering, RAG, Embeddings **Frameworks:** LangChain, LlamaIndex, Hugging Face",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.25781637
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e6",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b18",
+            "modality": "text",
+            "content": "**Technical Skills**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.24694623
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e7",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b3",
+            "modality": "text",
+            "content": "**Matoshri Pratishthan Group of Institutions SOE, Nanded** Sep 2022 \u2013 July 2026 Btech in Computer Science (AI / ML)",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.22534898
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          }
+        ],
+        "model": "gemini-2.5-flash-lite",
+        "latency_ms": {
+          "plan": 0,
+          "retrieve_ms": 78,
+          "fuse_ms": 0,
+          "rerank_ms": 0,
+          "visual_rerank_ms": 0,
+          "generate_ms": 1408
+        },
+        "insufficient_evidence": false
+      },
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0,
+      "ndcg_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "citation_validity": 1.0,
+      "citation_coverage": 1.0,
+      "keyword_coverage": 1.0
+    },
+    {
+      "query_id": "q4",
+      "retrieved_block_ids": [
+        "p1_b2",
+        "p1_b9",
+        "p1_b18",
+        "p1_b6",
+        "p1_b5",
+        "p1_b15",
+        "p1_b3",
+        "p1_b21"
+      ],
+      "answer": {
+        "query": "What educational background does this person have?",
+        "answer_text": "The person is pursuing a B.Tech in Computer Science (AI/ML) at Matoshri Pratishthan Group of Institutions SOE, Nanded, from September 2022 to July 2026 [e6]. They are an AI/ML undergraduate with hands-on experience in building LLM-powered applications, agentic AI systems, and Python backends [e4]. Their relevant coursework includes Machine Learning, Deep Learning, EDA, Feature Engineering, Model Evaluation, Linear Algebra, Probability & Statistics, and Calculus [e7].",
+        "citations": [
+          {
+            "evidence_id": "e6",
+            "quote": null
+          },
+          {
+            "evidence_id": "e4",
+            "quote": null
+          },
+          {
+            "evidence_id": "e7",
+            "quote": null
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "e0",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b2",
+            "modality": "text",
+            "content": "**Education**",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 5.8512363,
+              "dense": 0.39786917
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e1",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b9",
+            "modality": "text",
+            "content": "**Educational Experience**",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 5.6378384,
+              "dense": 0.4613593
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e2",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b18",
+            "modality": "text",
+            "content": "**Technical Skills**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.27902174
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e3",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b6",
+            "modality": "text",
+            "content": "**Relevant Coursework**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.27653018
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e4",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b5",
+            "modality": "text",
+            "content": "- \u0088 AI/ML undergraduate with strong hands-on experience in building LLM-powered applications, agentic AI systems, and Python backends. Skilled in FastAPI, Streamlit, LangGraph, and modern GenAI frameworks for developing scalable, real-world AI solutions. Experienced in integrating multiple large language models, designing modular architectures, and automating workflows. Passionate about applying AI and machine learning to solve practical problems through clean, production-oriented systems.",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.16814646
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e5",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b15",
+            "modality": "text",
+            "content": "**Projects**",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.15389967
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e6",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b3",
+            "modality": "text",
+            "content": "**Matoshri Pratishthan Group of Institutions SOE, Nanded** Sep 2022 \u2013 July 2026 Btech in Computer Science (AI / ML)",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.14163125
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e7",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b21",
+            "modality": "text",
+            "content": "**ML & Data Science:** Machine Learning, Deep Learning, EDA, Feature Engineering, Model Evaluation **Math:** Linear Algebra, Probability & Statistics, Calculus **Frontend:** Streamlit, Gradio",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.12647521
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          }
+        ],
+        "model": "gemini-2.5-flash-lite",
+        "latency_ms": {
+          "plan": 0,
+          "retrieve_ms": 159,
+          "fuse_ms": 0,
+          "rerank_ms": 0,
+          "visual_rerank_ms": 0,
+          "generate_ms": 1237
+        },
+        "insufficient_evidence": false
+      },
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0,
+      "ndcg_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "citation_validity": 1.0,
+      "citation_coverage": 1.0,
+      "keyword_coverage": 1.0
+    },
+    {
+      "query_id": "q5",
+      "retrieved_block_ids": [
+        "p1_b19",
+        "p1_b5",
+        "p1_b17",
+        "p1_b14",
+        "p1_b16",
+        "p1_b13",
+        "p1_b8",
+        "p1_b3"
+      ],
+      "answer": {
+        "query": "What LLM frameworks were used?",
+        "answer_text": "The LLM frameworks used include LangChain, LlamaIndex, and Hugging Face [e0]. Additionally, LangGraph is mentioned as a framework for developing AI solutions [e1] and for building autonomous multi-agent AI systems [e4].",
+        "citations": [
+          {
+            "evidence_id": "e0",
+            "quote": null
+          },
+          {
+            "evidence_id": "e1",
+            "quote": null
+          },
+          {
+            "evidence_id": "e4",
+            "quote": null
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "e0",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b19",
+            "modality": "text",
+            "content": "**Programming & Backend:** Python, FastAPI, Flask, REST APIs, JSON **LLMs & GenAI:** GPT, Claude, LLaMA, Mistral, Qwen, Prompt Engineering, RAG, Embeddings **Frameworks:** LangChain, LlamaIndex, Hugging Face",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 6.110669,
+              "dense": 0.4991096
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e1",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b5",
+            "modality": "text",
+            "content": "- \u0088 AI/ML undergraduate with strong hands-on experience in building LLM-powered applications, agentic AI systems, and Python backends. Skilled in FastAPI, Streamlit, LangGraph, and modern GenAI frameworks for developing scalable, real-world AI solutions. Experienced in integrating multiple large language models, designing modular architectures, and automating workflows. Passionate about applying AI and machine learning to solve practical problems through clean, production-oriented systems.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 3.9006433,
+              "dense": 0.35997623
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e2",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b17",
+            "modality": "text",
+            "content": "- \u0088 Multi-Model Chat Arena: Built a Streamlit-based LLM interface to compare responses from Gemini and GPT-3.5 with modular abstraction and secure API key handling.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 3.1753907,
+              "dense": 0.43461773
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e3",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b14",
+            "modality": "text",
+            "content": "- \u0088 Collaborated using Git in a cross-functional environment.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 2.255869,
+              "dense": 0.2392371
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e4",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b16",
+            "modality": "text",
+            "content": "- \u0088 AutoDev: Built an autonomous multi-agent AI system using FastAPI and LangGraph that converts natural-language requirements into fully functional, locally deployed web applications via state-machine\u2013governed agent orchestration.",
+            "page_image_uri": "",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "bm25": 1.3784285,
+              "dense": 0.21713832
+            },
+            "rerank_score": null,
+            "source_index": "bm25,dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e5",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b13",
+            "modality": "text",
+            "content": "- \u0088 Assisted in frontend UI development and API integration.",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.27459463
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e6",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b8",
+            "modality": "text",
+            "content": "\u0088 AI \u0088 DBMS \u0088 Probability Stats, and \u0088 ML AND DL \u0088 OS Linear Algebra \u0088 NLP \u0088 Software Engineering",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.26119876
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          },
+          {
+            "evidence_id": "e7",
+            "doc_id": "467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b",
+            "page_number": 1,
+            "block_id": "p1_b3",
+            "modality": "text",
+            "content": "**Matoshri Pratishthan Group of Institutions SOE, Nanded** Sep 2022 \u2013 July 2026 Btech in Computer Science (AI / ML)",
+            "page_image_uri": "file://C:\\Users\\Dell\\OneDrive\\Desktop\\projects\\multi-modal-document-intelligence-system\\docintel_phase1_cpu\\docintel\\data/pages/467a549008e92c5a6334b3b7957ef8327f259bb07fc9be3e28e571d5f342b66b/page_0001.png",
+            "bbox": {
+              "x0": 0.0,
+              "y0": 0.0,
+              "x1": 1241.0,
+              "y1": 1754.0
+            },
+            "retrieval_scores": {
+              "dense": 0.23937789
+            },
+            "rerank_score": null,
+            "source_index": "dense",
+            "doc_title": "sufyanresume.pdf"
+          }
+        ],
+        "model": "gemini-2.5-flash-lite",
+        "latency_ms": {
+          "plan": 0,
+          "retrieve_ms": 451,
+          "fuse_ms": 0,
+          "rerank_ms": 0,
+          "visual_rerank_ms": 0,
+          "generate_ms": 1197
+        },
+        "insufficient_evidence": false
+      },
+      "recall_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0,
+      "ndcg_at_k": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "citation_validity": 1.0,
+      "citation_coverage": 1.0,
+      "keyword_coverage": 0.5
+    }
+  ],
+  "meta": {
+    "timestamp": "2026-04-27T08:42:40.766353+00:00",
+    "model": "gemini-2.5-flash-lite",
+    "embedder": "all-MiniLM-L6-v2",
+    "rerank_enabled": false,
+    "visual_rerank_enabled": true,
+    "elapsed_s": 9.4
+  }
+}
