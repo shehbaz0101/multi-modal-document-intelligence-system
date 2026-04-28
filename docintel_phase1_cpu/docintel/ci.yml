@@ -1,0 +1,51 @@
+# DocIntel CI — runs on every push and PR
+#
+# Two jobs:
+#   1. test — unit tests (no external services needed for fusion/schema tests)
+#   2. lint — ruff lint + format check
+#
+# Eval runs separately (nightly) — see eval.yml
+
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install minimal test deps
+        run: |
+          pip install pydantic pydantic-settings pytest numpy
+
+      - name: Run unit tests
+        run: pytest tests/ -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Format check
+        run: ruff format --check .

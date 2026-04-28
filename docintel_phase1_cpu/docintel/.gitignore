@@ -69,3 +69,7 @@ logs/
 # Temp files
 *.tmp
 *.temp
+
+mmenv/
+.venv/
+venv/
