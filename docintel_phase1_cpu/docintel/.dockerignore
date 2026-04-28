@@ -1,0 +1,36 @@
+# Don't ship dev artifacts to the image
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Don't ship secrets — pass them via --env-file at runtime
+.env
+.env.local
+
+# Local data — use a volume mount in production
+data/
+models/
+
+# Editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Tests + docs (not needed at runtime)
+tests/
+docs/
+*.md
+
+# CI
+.github/
