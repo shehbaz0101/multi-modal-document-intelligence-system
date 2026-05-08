@@ -1,10 +1,16 @@
 """
-DocIntel — Industry-grade FastAPI application (Phase 3).
+DocIntel — Industry-grade FastAPI application.
 
-New in Phase 3:
-  - /ask/stream — Server-Sent Events streaming endpoint
-  - Langfuse tracing wired through every /ask
-  - Eval endpoint /eval/run (kicks off background eval)
+Endpoints:
+  GET  /                  — citation UI
+  GET  /health            — per-service health
+  GET  /metrics           — live stats
+  GET  /docs              — Swagger UI
+  POST /ingest            — upload PDF
+  POST /ask               — query (linear pipeline)
+  POST /ask/stream        — query (SSE streaming)
+  POST /ask/graph         — query (LangGraph workflow with self-correction)
+  DELETE /documents/{id}  — remove a document
 """
 from __future__ import annotations
 
@@ -41,6 +47,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)-5s %(name)s :: %(message)s",
 )
 
+
 # ── cache ────────────────────────────────────────────────────────────────────
 class _Cache:
     def __init__(self, ttl: int = 3600):
@@ -68,11 +75,9 @@ _intel: DocIntel | None = None
 
 
 def _get_intel() -> DocIntel:
-    """Return the DocIntel singleton — raises if not yet initialized."""
     if _intel is None:
         raise RuntimeError("DocIntel not initialized")
     return _intel
-
 
 
 @asynccontextmanager
@@ -81,9 +86,9 @@ async def lifespan(app: FastAPI):
     log.info("Starting DocIntel...")
     _intel = DocIntel()
     init_tracer(
-        host=_get_intel().s.observability.langfuse_host,
-        public_key=_get_intel().s.observability.langfuse_public_key,
-        secret_key=_get_intel().s.observability.langfuse_secret_key,
+        host=_intel.s.observability.langfuse_host,
+        public_key=_intel.s.observability.langfuse_public_key,
+        secret_key=_intel.s.observability.langfuse_secret_key,
     )
     log.info("DocIntel ready")
     yield
@@ -93,8 +98,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="DocIntel API",
-    description="Industry-grade multi-modal document intelligence.",
-    version="3.0.0",
+    description="Industry-grade multi-modal document intelligence with LangGraph orchestration.",
+    version="3.1.0",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -182,23 +187,24 @@ def serve_ui():
 @app.get("/health", response_model=HealthDetail)
 def health():
     qok, ook = "ok", "ok"
+    intel = _get_intel()
     try:
         from qdrant_client import QdrantClient
-        QdrantClient(_get_intel().s.index.vector_url).get_collections()
+        QdrantClient(intel.s.index.vector_url).get_collections()
     except Exception as e: qok = f"error: {e}"
     try:
         from opensearchpy import OpenSearch
-        OpenSearch(_get_intel().s.index.sparse_url).info()
+        OpenSearch(intel.s.index.sparse_url).info()
     except Exception as e: ook = f"error: {e}"
 
     tracing = "off"
-    if _get_intel().s.observability.tracing_backend == "langfuse" and _get_intel().s.observability.langfuse_public_key:
+    if intel.s.observability.tracing_backend == "langfuse" and intel.s.observability.langfuse_public_key:
         tracing = "langfuse"
 
     return HealthDetail(
         status="ok" if qok == "ok" and ook == "ok" else "degraded",
         qdrant=qok, opensearch=ook,
-        model=_get_intel().s.generation.model,
+        model=intel.s.generation.model,
         uptime_s=round(time.time() - _start_time, 1),
         tracing=tracing,
     )
@@ -288,19 +294,104 @@ def ask(req: AskRequest, request: Request):
     return AskResponse(**result, cached=False, request_id=rid)
 
 
-@app.post("/ask/stream")
-async def ask_stream(req: AskRequest, request: Request):
+# ── /ask/graph — LangGraph workflow with self-correction ─────────────
+@app.post("/ask/graph", response_model=AskResponse)
+def ask_graph(req: AskRequest, request: Request):
     """
-    Server-Sent Events streaming.
-
-    Stages:
-      1. event: status   — "retrieving", "generating"
-      2. event: citations — final citation list (sent before tokens)
-      3. event: token    — answer text chunks as they generate
-      4. event: done     — final timings and metadata
+    LangGraph-powered ask. Adds:
+      - Auto query expansion when retrieval finds nothing
+      - Self-correction when the generator says INSUFFICIENT_EVIDENCE
+      - Conditional branching by query intent
     """
     rid = getattr(request.state, "request_id", "-")
     _metrics["ask_total"] += 1
+    t0 = time.perf_counter()
+
+    try:
+        answer = _get_intel().ask_with_graph(
+            req.query, tenant_id=req.tenant_id, user_ids=req.user_ids or None
+        )
+    except Exception as e:
+        _metrics["ask_errors"] += 1
+        raise HTTPException(500, f"Graph query failed: {e}")
+
+    citations = [
+        CitationOut(
+            evidence_id=e.evidence_id, page=e.page_number, modality=e.modality.value,
+            snippet=(e.content or "")[:200], bbox=e.bbox.model_dump(),
+        )
+        for e in answer.evidence
+        if any(c.evidence_id == e.evidence_id for c in answer.citations)
+    ]
+    _metrics["ask_latency_ms_total"] += int((time.perf_counter() - t0) * 1000)
+
+    return AskResponse(
+        answer=answer.answer_text,
+        citations=citations,
+        insufficient=answer.insufficient_evidence,
+        timings_ms=answer.latency_ms,
+        cached=False,
+        request_id=rid,
+    )
+
+# ── /chat — multi-turn conversational agent ─────────────────────────
+class ChatRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=2000)
+    session_id: str = Field(..., min_length=1, max_length=64)
+    tenant_id: str = Field(default="default", max_length=64)
+    user_ids: list[str] = Field(default=[])
+
+class ChatResponse(BaseModel):
+    answer: str
+    citations: list[dict]
+    session_id: str
+    turns: int
+    tool_calls: list[str]
+
+@app.post("/chat", response_model=ChatResponse)
+def chat(req: ChatRequest, request: Request):
+    """
+    Multi-turn conversational agent backed by LangChain.
+
+    The agent has memory (session_id), can call tools, and decides
+    when to retrieve from documents vs answer from history.
+    """
+    from app.agent import chat as agent_chat
+    rid = getattr(request.state, "request_id", "-")
+
+    try:
+        reply = agent_chat(
+            intel=_get_intel(),
+            session_id=req.session_id,
+            message=req.message,
+            tenant_id=req.tenant_id,
+            user_ids=req.user_ids,
+        )
+    except Exception as e:
+        log.error("[%s] chat failed: %s", rid, e)
+        raise HTTPException(500, f"Chat failed: {e}")
+
+    return ChatResponse(
+        answer=reply.answer,
+        citations=reply.citations,
+        session_id=reply.session_id,
+        turns=reply.turns,
+        tool_calls=reply.tool_calls,
+    )
+
+@app.post("/chat/reset")
+def chat_reset(session_id: str):
+    """Clear conversation history for a session."""
+    from app.agent import reset_session
+    reset_session(session_id)
+    return {"reset": True, "session_id": session_id} #return statement
+
+@app.post("/ask/stream")
+async def ask_stream(req: AskRequest, request: Request):
+    """Server-Sent Events streaming endpoint."""
+    rid = getattr(request.state, "request_id", "-")
+    _metrics["ask_total"] += 1
+    intel = _get_intel()
 
     async def event_stream():
         def sse(event: str, data) -> bytes:
@@ -309,7 +400,6 @@ async def ask_stream(req: AskRequest, request: Request):
         try:
             yield sse("status", {"stage": "retrieving"})
 
-            # Run blocking retrieval in a thread so the event loop stays responsive
             loop = asyncio.get_event_loop()
             from app.schema import QueryPlan
             from retrieval.router import plan_query as _plan
@@ -317,9 +407,9 @@ async def ask_stream(req: AskRequest, request: Request):
             plan: QueryPlan = await loop.run_in_executor(
                 None,
                 lambda: _plan(req.query, tenant_id=req.tenant_id, user_ids=req.user_ids or None,
-                              visual_available=_get_intel().s.embedding.visual_enabled),
+                              visual_available=intel.s.embedding.visual_enabled),
             )
-            evidence, timings = await loop.run_in_executor(None, _get_intel().retriever.retrieve, plan)
+            evidence, timings = await loop.run_in_executor(None, intel.retriever.retrieve, plan)
 
             citations = [
                 {
@@ -333,12 +423,11 @@ async def ask_stream(req: AskRequest, request: Request):
             yield sse("citations", citations)
             yield sse("status", {"stage": "generating"})
 
-            # Stream tokens from Gemini
             full_answer = ""
             async for chunk in _stream_gemini(req.query, evidence):
                 full_answer += chunk
                 yield sse("token", {"text": chunk})
-                await asyncio.sleep(0)  # yield to event loop
+                await asyncio.sleep(0)
 
             yield sse("done", {"timings_ms": timings, "request_id": rid, "length": len(full_answer)})
         except Exception as e:
@@ -353,10 +442,9 @@ async def ask_stream(req: AskRequest, request: Request):
 
 
 async def _stream_gemini(query: str, evidence: list):
-    """Stream Gemini response chunk by chunk."""
     from google import genai
     from google.genai import types
-    import base64
+    intel = _get_intel()
 
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
@@ -375,14 +463,13 @@ async def _stream_gemini(query: str, evidence: list):
         "Don't fabricate. Don't use outside knowledge."
     )
 
-    # google-genai supports streaming via generate_content_stream
     stream = client.models.generate_content_stream(
-        model=_get_intel().s.generation.model,
+        model=intel.s.generation.model,
         contents=parts,
         config=types.GenerateContentConfig(
             system_instruction=system,
-            max_output_tokens=_get_intel().s.generation.max_tokens,
-            temperature=_get_intel().s.generation.temperature,
+            max_output_tokens=intel.s.generation.max_tokens,
+            temperature=intel.s.generation.temperature,
         ),
     )
 
@@ -394,8 +481,9 @@ async def _stream_gemini(query: str, evidence: list):
 @app.delete("/documents/{doc_id}", response_model=DeleteResponse)
 def delete_document(doc_id: str):
     try:
-        _get_intel().dense_index.delete_doc(doc_id)
-        _get_intel().sparse_index.delete_doc(doc_id)
+        intel = _get_intel()
+        intel.dense_index.delete_doc(doc_id)
+        intel.sparse_index.delete_doc(doc_id)
         return DeleteResponse(doc_id=doc_id, deleted=True)
     except Exception as e:
         raise HTTPException(500, f"Delete failed: {e}")

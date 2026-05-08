@@ -1,13 +1,10 @@
 """
 Orchestrator — the public API.
 
-Phase 2 additions:
-  - Visual reranker slot (Gemini-based, CPU-friendly)
-  - Auto-enabled for visual-intent queries when config says so
-
-Two methods:
-  intel.ingest(file_path, tenant_id, ...)  -> DocumentMeta
-  intel.ask(query, tenant_id, ...)         -> Answer
+Three methods:
+  intel.ingest(file_path, tenant_id, ...)          -> DocumentMeta
+  intel.ask(query, tenant_id, ...)                 -> Answer  (linear pipeline)
+  intel.ask_with_graph(query, tenant_id, ...)      -> Answer  (LangGraph workflow)
 """
 from __future__ import annotations
 
@@ -67,7 +64,7 @@ class DocIntel:
             collection=self.s.index.text_collection,
             dim=self.s.embedding.text_dim,
             api_key=self.s.index.vector_api_key,
-            storage_root=self.s.storage.root,   # needed for page_image_uri
+            storage_root=self.s.storage.root,
         )
 
         # ── cross-encoder reranker (Phase 3) ──
@@ -156,7 +153,7 @@ class DocIntel:
                  int((time.perf_counter() - t0) * 1000))
         return result.meta
 
-    # ---------- ask ----------
+    # ---------- ask (linear pipeline) ----------
     def ask(
         self,
         query: str,
@@ -181,3 +178,22 @@ class DocIntel:
 
         answer.latency_ms = {"plan": plan_ms, **r_timings, "generate_ms": gen_ms}
         return answer
+
+    # ---------- ask_with_graph (LangGraph workflow) ----------
+    def ask_with_graph(
+        self,
+        query: str,
+        *,
+        tenant_id: str,
+        user_ids: list[str] | None = None,
+    ) -> Answer:
+        """
+        Same contract as .ask() but routes through the LangGraph workflow.
+
+        Adds:
+          - Auto query expansion when initial retrieval is thin
+          - Self-correction loop on INSUFFICIENT_EVIDENCE
+          - Conditional branching by query intent
+        """
+        from retrieval.graph import run_graph
+        return run_graph(self, query, tenant_id, user_ids)
